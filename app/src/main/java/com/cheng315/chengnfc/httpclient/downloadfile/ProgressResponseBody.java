@@ -49,7 +49,7 @@ public class ProgressResponseBody extends ResponseBody {
 
         }
 
-        return null;
+        return bufferedSource;
     }
 
     private Source source(Source source) {

@@ -7,7 +7,7 @@ import okhttp3.Response;
 
 /**
  * Created by Administrator on 2017/8/25.
- * 自定义下载的拦截器
+ * 自定义下载拦截器
  */
 
 public class ProgressInterceptor implements Interceptor {

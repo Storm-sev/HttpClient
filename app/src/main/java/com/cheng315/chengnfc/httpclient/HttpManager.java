@@ -4,6 +4,7 @@ import com.cheng315.chengnfc.bean.VersionBean;
 import com.cheng315.chengnfc.httpclient.downloadfile.FileCallBack;
 import com.cheng315.chengnfc.httpclient.downloadfile.FileSubscriber;
 import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.chengnfc.utils.RxBus;
 
 import okhttp3.ResponseBody;
 import rx.Observable;
@@ -24,9 +25,6 @@ public class HttpManager {
 
     /**
      * 下载执行请求
-     *
-     * @param url
-     * @param fileCallBack
      */
     public static void load(String url, final FileCallBack<ResponseBody> fileCallBack) {
 
@@ -41,13 +39,17 @@ public class HttpManager {
                     public void call(ResponseBody responseBody) {
                         fileCallBack.saveFile(responseBody);
                     }
-                }).observeOn(AndroidSchedulers.mainThread())
+                })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new FileSubscriber<ResponseBody>(fileCallBack));
 
 
     }
 
-    public static void checkVersionCode(String curVersionCode) {
+    /**
+     * 检查版本是否一致 api
+     */
+    public static void checkVersionCode(String curVersionCode, final CommonCallBack commonCallBack) {
 
         Observable<VersionBean> versionBeanObservable =
                 HttpClientManager.getHttpClientService().checkVersionService(curVersionCode);
@@ -60,8 +62,12 @@ public class HttpManager {
                     @Override
                     public void onCompleted() {
 
-
                         LogUtils.d(TAG, "onCompleted : 请求完成");
+
+                        if (commonCallBack != null) {
+                            commonCallBack.onComplete();
+                        }
+
                     }
 
                     @Override
@@ -69,23 +75,25 @@ public class HttpManager {
 
                         LogUtils.d(TAG, "onError : " + e.toString());
 
+                        if (commonCallBack != null) {
+                            commonCallBack.onError(e);
+
+                        }
                     }
 
                     @Override
                     public void onNext(VersionBean versionBean) {
 
 
-                        LogUtils.d(TAG, " onNext 获取链接的版本 判断 :  " + versionBean.getCode());
 
                         int code = Integer.valueOf(versionBean.getCode());
 
-                        if (code == 0) {
-                            LogUtils.d(TAG, "版本有更新 : " + versionBean.getData().getApkUrl());
+                        if (commonCallBack != null) {
+                            commonCallBack.onNext(versionBean);
 
-                        } else if (code == 7) {
-                            LogUtils.d(TAG, "当前为最新版本 ;　" + versionBean.getDescription());
                         }
 
+                        RxBus.getInstace().send("发送数据到 rxbus");
 
                     }
                 });

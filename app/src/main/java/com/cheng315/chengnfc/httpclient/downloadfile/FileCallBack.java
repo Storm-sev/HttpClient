@@ -34,6 +34,7 @@ public abstract class FileCallBack<T> {
     }
 
 
+    //
     public abstract void onSuccess(T t);
 
     public abstract void onStart();
@@ -42,7 +43,7 @@ public abstract class FileCallBack<T> {
 
     public abstract void onError(Throwable e);
 
-    public abstract void onProgress(long progress, long total);
+    public abstract void onProgress(float progress, long total);
 
 
 
@@ -73,11 +74,11 @@ public abstract class FileCallBack<T> {
             fos = new FileOutputStream(file);
 
             while ((len = is.read(buff)) != -1) {
-                fos.write(buff, 0, 1);
+                fos.write(buff, 0, len);
             }
             fos.flush();
 
-            unSubscribe();
+//       unSubscribe(); //取消订阅
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -91,6 +92,9 @@ public abstract class FileCallBack<T> {
             } catch (IOException e) {
                 LogUtils.d(TAG, e.getMessage());
             }
+
+            // 解除订阅关系
+            unSubscribe();
 
         }
 
@@ -115,7 +119,10 @@ public abstract class FileCallBack<T> {
             @Override
             public void call(FileLoadEvent fileLoadEvent) {
 
-                onProgress(fileLoadEvent.getProgress(), fileLoadEvent.getTotal());
+                long progress = fileLoadEvent.getProgress();
+                long total = fileLoadEvent.getTotal();
+
+                onProgress(progress * 1.0f / total, total);
 
             }
         }, new Action1<Throwable>() {
