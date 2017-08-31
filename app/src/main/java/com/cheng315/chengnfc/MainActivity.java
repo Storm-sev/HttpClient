@@ -14,14 +14,17 @@ import com.cheng315.chengnfc.utils.LogUtils;
 import com.cheng315.chengnfc.utils.RxBus;
 import com.jakewharton.rxbinding.view.RxView;
 
+import java.util.regex.Pattern;
+
 import rx.functions.Action1;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private Button download_apk;
+    private Button download_apk,btn_check;
     private TextView textView;
+
 
     private VersionBean mVersionBean;
 
@@ -46,19 +49,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void _setUpListener() {
 
-//        download_apk.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                if (mVersionBean == null) {
-//                    return;
-//
-//                }
-//                // 直接启动下载的service
-//                startToUpdate();
-//
-//            }
-//        });
+
+        /**
+         *
+         */
+        RxView.clicks(btn_check)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+
+                        checkIsNet();
+
+                    }
+                });
+
 
 
         RxView.clicks(download_apk)
@@ -78,6 +82,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
+     * 检查一个 url 地址是否为地址
+     */
+    private void checkIsNet() {
+
+        String url = "http://www.bai.com";
+
+        Pattern pattern = Pattern.compile("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\\/])+$");
+
+
+        LogUtils.d(TAG, " 检查网站是不是网址" + url + " -----------------" + pattern.matcher(url).matches());
+
+
+
+
+    }
+
+
+    /**
      * 启动服务更新版本
      */
     private void startToUpdate() {
@@ -92,11 +114,15 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initViews() {
         download_apk = (Button) findViewById(R.id.download_apk);
+        btn_check = (Button)findViewById(R.id.btn_check);
         textView = (TextView) findViewById(R.id.textView);
 
     }
 
     private void initData() {
+
+
+
 
 
         checkVersionCode();
@@ -144,7 +170,6 @@ public class MainActivity extends AppCompatActivity {
 
                 LogUtils.d(TAG, "回调到activity界面的数据 : " + versionBean.getCode());
 
-                //
                 if (!"0".equals(versionBean.getCode())) {
                     return;
 

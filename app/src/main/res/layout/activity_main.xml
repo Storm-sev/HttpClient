@@ -28,6 +28,12 @@
             android:layout_width="76dp"
             android:layout_height="37dp"
             android:text="下载" />
+
+        <Button
+            android:id="@+id/btn_check"
+            android:layout_width="wrap_content"
+            android:layout_height="37dp"
+            android:text="检查是否为网址" />
     </LinearLayout>
 
 </LinearLayout>

@@ -1,9 +1,12 @@
 package com.cheng315.chengnfc.httpclient;
 
+import com.cheng315.chengnfc.MApplication;
 import com.cheng315.chengnfc.httpclient.downloadfile.ProgressInterceptor;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -32,11 +35,11 @@ public class HttpClientManager {
                     ProgressInterceptor progressInterceptor = new ProgressInterceptor();
 
 
-//                    Cache cache = new Cache(new File(MApplication.appContext.getCacheDir(), "HttpCahe")
-//                            , 1024 * 1024 * 100);
+                    Cache cache = new Cache(new File(MApplication.appContext.getCacheDir(), "HttpCahe")
+                            , 1024 * 1024 * 100);
 
                     httpClient = new OkHttpClient.Builder()
-//                            .cache(cache)
+                            .cache(cache)
                             .retryOnConnectionFailure(true)
                             .addInterceptor(httpLoggingInterceptor)
                             .addNetworkInterceptor(progressInterceptor)

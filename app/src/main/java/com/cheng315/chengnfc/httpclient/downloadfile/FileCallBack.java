@@ -46,10 +46,6 @@ public abstract class FileCallBack<T> {
     public abstract void onProgress(float progress, long total);
 
 
-
-
-
-
     /**
      * @param body 响应内容
      */
@@ -78,7 +74,6 @@ public abstract class FileCallBack<T> {
             }
             fos.flush();
 
-//       unSubscribe(); //取消订阅
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -104,7 +99,7 @@ public abstract class FileCallBack<T> {
     /**
      * 解除订阅
      */
-    public void unSubscribe(){
+    public void unSubscribe() {
 
         RxBus.getInstace().unSubscribe(this);
 
