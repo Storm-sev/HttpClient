@@ -5,13 +5,21 @@ import android.widget.EditText;
 
 /**
  * Created by Administrator on 2017/9/1.
- * 校验的模型
+ *
+ *  EditText的校验模型
+ *
  */
 
 public class ValidationModel {
 
+    /**
+     * 传入的 editText控件
+     */
     private EditText editText;
 
+    /**
+     * 执行校验的处理类
+     */
     private ValidationExecutor validationExecutor;
 
 

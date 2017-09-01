@@ -13,7 +13,7 @@ public abstract class ValidationExecutor extends ValidationUtils{
 
 
     /**
-     * 处理校验
+     * 处理校验 的结果
      * @param context
      * @param content
      * @return
