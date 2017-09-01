@@ -57,7 +57,6 @@ public class UpdateService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-
     /**
      *
      */
@@ -75,7 +74,6 @@ public class UpdateService extends Service {
                 public void onSuccess(ResponseBody responseBody) {
 
 
-
                 }
 
                 @Override
@@ -90,7 +88,7 @@ public class UpdateService extends Service {
 
                     File file = new File(fileDir, AppUtils.getNameFromUrl(apkUrl));
 
-                    if(file.exists()) {
+                    if (file.exists()) {
 
                         AppUtils.installApp(UpdateService.this, file);
                     }
@@ -101,7 +99,6 @@ public class UpdateService extends Service {
 
                 @Override
                 public void onError(Throwable e) {
-
 
 
                 }
@@ -116,7 +113,7 @@ public class UpdateService extends Service {
 
                 }
             });
-        }else  {
+        } else {
 
             // 结束自己
             stopSelf();
@@ -141,7 +138,6 @@ public class UpdateService extends Service {
             mRemoteViews.setTextViewText(R.id.tv_tool__title, "诚品宝:" + curProgress + "%");
 
             mNotificationManager.notify(0, mBuilder.build());
-
 
 
         }

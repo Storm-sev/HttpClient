@@ -1,9 +1,11 @@
 package com.cheng315.chengnfc;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cheng315.chengnfc.bean.VersionBean;
@@ -12,6 +14,8 @@ import com.cheng315.chengnfc.httpclient.HttpManager;
 import com.cheng315.chengnfc.service.UpdateService;
 import com.cheng315.chengnfc.utils.LogUtils;
 import com.cheng315.chengnfc.utils.RxBus;
+import com.cheng315.chengnfc.utils.validations.ValidationModel;
+import com.cheng315.chengnfc.utils.validations.validation.UserNameValidation;
 import com.jakewharton.rxbinding.view.RxView;
 
 import java.util.regex.Pattern;
@@ -22,9 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private Button download_apk,btn_check;
+    private Button download_apk,btn_check,btn_send_sms;
     private TextView textView;
-
+    private EditText et_phone;
 
     private VersionBean mVersionBean;
 
@@ -89,13 +93,7 @@ public class MainActivity extends AppCompatActivity {
         String url = "http://www.bai.com";
 
         Pattern pattern = Pattern.compile("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\\/])+$");
-
-
         LogUtils.d(TAG, " 检查网站是不是网址" + url + " -----------------" + pattern.matcher(url).matches());
-
-
-
-
     }
 
 
@@ -117,13 +115,13 @@ public class MainActivity extends AppCompatActivity {
         btn_check = (Button)findViewById(R.id.btn_check);
         textView = (TextView) findViewById(R.id.textView);
 
+        et_phone = (EditText)findViewById(R.id.et_phone);
+        btn_send_sms = (Button)findViewById(R.id.btn_send_sms);
+
+
     }
 
     private void initData() {
-
-
-
-
 
         checkVersionCode();
         RxBus.getInstace().doSubscribe(VersionBean.class, new Action1<VersionBean>() {
@@ -140,6 +138,44 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+        RxView.clicks(btn_send_sms)
+                .subscribe(new Action1<Void>() {
+                    @Override
+                    public void call(Void aVoid) {
+
+
+                        sendValidationSms();
+
+                    }
+                });
+
+
+
+    }
+
+    /**
+     * 短信验证
+     */
+    private void sendValidationSms() {
+
+        MApplication.getSingleEditTextValidator()
+                .add(new ValidationModel(et_phone, new UserNameValidation()))
+                .excute();
+
+
+        if(!MApplication.getSingleEditTextValidator().validate()) {
+
+            LogUtils.d(TAG," 获取的结果是 false");
+            return;
+        }
+
+
+        LogUtils.d(TAG,"验证输入的手机号 +  是手机号");
+        // 控制 60s 之后重新发送
+        btn_send_sms.setTextColor(Color.BLUE);
+        btn_send_sms.setEnabled(false);
 
     }
 

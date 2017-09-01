@@ -24,7 +24,7 @@ public abstract class FileCallBack<T> {
 
 
     private String fileDir;// 文件的存储路径
-    private String fileName;
+    private String fileName; // 文件的名字
 
 
     public FileCallBack(String fileDir, String fileName) {
@@ -57,6 +57,8 @@ public abstract class FileCallBack<T> {
         byte[] buff = new byte[2048];
         int len;
 
+        File file = null;
+
         try {
             is = body.byteStream();
 
@@ -66,7 +68,7 @@ public abstract class FileCallBack<T> {
                 dir.mkdirs();
             }
 
-            File file = new File(dir, fileName);
+            file = new File(dir, fileName);
             fos = new FileOutputStream(file);
 
             while ((len = is.read(buff)) != -1) {
@@ -91,8 +93,8 @@ public abstract class FileCallBack<T> {
             // 解除订阅关系
             unSubscribe();
 
-        }
 
+        }
 
     }
 

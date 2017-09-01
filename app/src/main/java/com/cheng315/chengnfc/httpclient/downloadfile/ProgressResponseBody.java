@@ -23,13 +23,11 @@ public class ProgressResponseBody extends ResponseBody {
     private ResponseBody responseBody;
     private BufferedSource bufferedSource;
 
-//    private DownloadListener downloadListener;
 
 
     public ProgressResponseBody(ResponseBody responseBody) {
 
         this.responseBody = responseBody;
-//        this.downloadListener = downloadListener;
     }
 
     @Override
