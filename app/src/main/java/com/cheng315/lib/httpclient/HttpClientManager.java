@@ -1,7 +1,7 @@
-package com.cheng315.chengnfc.httpclient;
+package com.cheng315.lib.httpclient;
 
 import com.cheng315.chengnfc.MApplication;
-import com.cheng315.chengnfc.httpclient.downloadfile.ProgressInterceptor;
+import com.cheng315.lib.httpclient.downloadfile.ProgressInterceptor;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;

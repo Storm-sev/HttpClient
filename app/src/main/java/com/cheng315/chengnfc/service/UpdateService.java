@@ -11,8 +11,8 @@ import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
 import com.cheng315.chengnfc.R;
-import com.cheng315.chengnfc.httpclient.HttpManager;
-import com.cheng315.chengnfc.httpclient.downloadfile.FileCallBack;
+import com.cheng315.lib.httpclient.HttpManager;
+import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 import com.cheng315.chengnfc.utils.AppUtils;
 import com.cheng315.chengnfc.utils.LogUtils;
 
@@ -38,6 +38,9 @@ public class UpdateService extends Service {
     private RemoteViews mRemoteViews;
 
     private int preProgress;
+
+
+
 
     @Nullable
     @Override

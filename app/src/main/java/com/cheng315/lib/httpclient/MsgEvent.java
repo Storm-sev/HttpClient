@@ -1,4 +1,4 @@
-package com.cheng315.chengnfc.httpclient;
+package com.cheng315.lib.httpclient;
 
 /**
  * Created by Administrator on 2017/8/28.

@@ -1,4 +1,4 @@
-package com.cheng315.chengnfc.httpclient;
+package com.cheng315.lib.httpclient;
 
 import com.cheng315.chengnfc.bean.VersionBean;
 

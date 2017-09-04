@@ -9,8 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cheng315.chengnfc.bean.VersionBean;
-import com.cheng315.chengnfc.httpclient.CommonCallBack;
-import com.cheng315.chengnfc.httpclient.HttpManager;
+import com.cheng315.lib.httpclient.CommonCallBack;
+import com.cheng315.lib.httpclient.HttpManager;
 import com.cheng315.chengnfc.service.UpdateService;
 import com.cheng315.chengnfc.utils.LogUtils;
 import com.cheng315.chengnfc.utils.RxBus;
