@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/action_bar_scan"
+    android:layout_width="match_parent"
+    android:background="@android:color/transparent"
+    android:gravity="center_vertical"
+    android:layout_height="@dimen/scan_actionbar_height">
+
+
+    <ImageView
+        android:id="@+id/scan_back"
+        android:layout_marginLeft="24.5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/scan_back"
+        />
+
+    
+    <TextView
+        android:id="@+id/scan_title"
+        android:layout_marginLeft="25dp"
+        android:layout_toRightOf="@+id/scan_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="扫描NFC"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        />
+    
+
+
+</RelativeLayout>

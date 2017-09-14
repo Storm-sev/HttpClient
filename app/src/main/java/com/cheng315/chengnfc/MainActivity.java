@@ -9,27 +9,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cheng315.chengnfc.bean.VersionBean;
-import com.cheng315.lib.httpclient.CommonCallBack;
-import com.cheng315.lib.httpclient.HttpManager;
 import com.cheng315.chengnfc.service.UpdateService;
 import com.cheng315.chengnfc.utils.LogUtils;
-import com.cheng315.chengnfc.utils.RxBus;
+import com.cheng315.lib.utils.RxBus;
 import com.cheng315.chengnfc.utils.validations.ValidationModel;
 import com.cheng315.chengnfc.utils.validations.validation.UserNameValidation;
-import com.jakewharton.rxbinding.view.RxView;
+import com.cheng315.lib.httpclient.CommonCallBack;
+import com.cheng315.lib.httpclient.HttpManager;
+import com.jakewharton.rxbinding2.view.RxView;
 
 import java.util.regex.Pattern;
 
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private Button download_apk,btn_check,btn_send_sms;
+    private Button download_apk, btn_check, btn_send_sms, btn_to_main, btn_to_scan_nfc;
     private TextView textView;
     private EditText et_phone;
-
     private VersionBean mVersionBean;
 
 
@@ -53,34 +52,49 @@ public class MainActivity extends AppCompatActivity {
 
     private void _setUpListener() {
 
-
-        /**
-         *
-         */
-        RxView.clicks(btn_check)
-                .subscribe(new Action1<Void>() {
+        RxView.clicks(btn_to_scan_nfc)
+                .subscribe(new Consumer<Object>() {
                     @Override
-                    public void call(Void aVoid) {
+                    public void accept(Object o) throws Exception {
 
+                        Intent intent = new Intent(MainActivity.this, ScanNfcActivity.class);
+                        startActivity(intent);
+
+                    }
+                });
+
+        RxView.clicks(btn_to_main)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        Intent intent = new Intent(MainActivity.this, MainActivity1.class);
+                        startActivity(intent);
+                    }
+                });
+
+
+//
+        RxView.clicks(btn_check)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
                         checkIsNet();
 
                     }
                 });
 
-
-
         RxView.clicks(download_apk)
-                .subscribe(new Action1<Void>() {
+                .subscribe(new Consumer<Object>() {
                     @Override
-                    public void call(Void aVoid) {
-
+                    public void accept(Object o) throws Exception {
                         if (mVersionBean == null) {
                             return;
                         }
-
                         startToUpdate();
+
                     }
                 });
+
 
     }
 
@@ -111,12 +125,15 @@ public class MainActivity extends AppCompatActivity {
      * init
      */
     private void initViews() {
+        btn_to_main = (Button) findViewById(R.id.btn_to_main);
+        btn_to_scan_nfc = (Button) findViewById(R.id.btn_to_scan_nfc);
+
         download_apk = (Button) findViewById(R.id.download_apk);
-        btn_check = (Button)findViewById(R.id.btn_check);
+        btn_check = (Button) findViewById(R.id.btn_check);
         textView = (TextView) findViewById(R.id.textView);
 
-        et_phone = (EditText)findViewById(R.id.et_phone);
-        btn_send_sms = (Button)findViewById(R.id.btn_send_sms);
+        et_phone = (EditText) findViewById(R.id.et_phone);
+        btn_send_sms = (Button) findViewById(R.id.btn_send_sms);
 
 
     }
@@ -124,33 +141,32 @@ public class MainActivity extends AppCompatActivity {
     private void initData() {
 
         checkVersionCode();
-        RxBus.getInstace().doSubscribe(VersionBean.class, new Action1<VersionBean>() {
+        RxBus.getInstance().doSubscribe(VersionBean.class, new Consumer<VersionBean>() {
             @Override
-            public void call(VersionBean versionBean) {
-
+            public void accept(VersionBean versionBean) throws Exception {
                 mVersionBean = versionBean;
-
             }
-        }, new Action1<Throwable>() {
+
+
+        }, new Consumer<Throwable>() {
             @Override
-            public void call(Throwable throwable) {
-
+            public void accept(Throwable throwable) throws Exception {
 
             }
+
         });
 
 
-        RxView.clicks(btn_send_sms)
-                .subscribe(new Action1<Void>() {
-                    @Override
-                    public void call(Void aVoid) {
-
-
-                        sendValidationSms();
-
-                    }
-                });
-
+//        RxView.clicks(btn_send_sms)
+//                .subscribe(new Action1<Void>() {
+//                    @Override
+//                    public void call(Void aVoid) {
+//
+//
+//                        sendValidationSms();
+//
+//                    }
+//                });
 
 
     }
@@ -165,14 +181,14 @@ public class MainActivity extends AppCompatActivity {
                 .excute();
 
 
-        if(!MApplication.getSingleEditTextValidator().validate()) {
+        if (!MApplication.getSingleEditTextValidator().validate()) {
 
-            LogUtils.d(TAG," 获取的结果是 false");
+            LogUtils.d(TAG, " 获取的结果是 false");
             return;
         }
 
 
-        LogUtils.d(TAG,"验证输入的手机号 +  是手机号");
+        LogUtils.d(TAG, "验证输入的手机号 +  是手机号");
         // 控制 60s 之后重新发送
         btn_send_sms.setTextColor(Color.BLUE);
         btn_send_sms.setEnabled(false);
@@ -203,16 +219,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNext(VersionBean versionBean) {
 
-
-                LogUtils.d(TAG, "回调到activity界面的数据 : " + versionBean.getCode());
+                LogUtils.d(TAG, "检查版本是否有更新传递的json数据  : " + versionBean.getCode());
 
                 if (!"0".equals(versionBean.getCode())) {
                     return;
-
                 }
-
-                RxBus.getInstace().send(versionBean);
-
+                RxBus.getInstance().send(versionBean);
             }
 
 

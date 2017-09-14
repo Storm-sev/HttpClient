@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.NavigationView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_right"
+    android:layout_width="304dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:background="@color/bg_main_right">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="28dp"
+            android:layout_marginTop="43.5dp"
+            android:background="@drawable/right_close"
+            />
+
+        <RadioGroup
+            android:id="@+id/rg_menu"
+            android:layout_width="@dimen/rg_width"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/rg_margin_top">
+
+            <RadioButton
+                android:id="@+id/rb_home"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/rb_main_right_selector"
+                android:button="@null"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/rb_padding_left"
+                android:text="首页"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="47.9dp"
+                android:background="#FFE7E9ED" />
+
+            <RadioButton
+                android:id="@+id/rb_about_this"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/rb_main_right_selector"
+                android:button="@null"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/rb_padding_left"
+                android:text="关于诚品宝"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="47.9dp"
+                android:background="#FFE7E9ED" />
+
+            <RadioButton
+                android:id="@+id/rb_about_feiyi"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/rb_main_right_selector"
+                android:button="@null"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/rb_padding_left"
+                android:text="非遗国际"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="47.9dp"
+                android:background="#FFE7E9ED" />
+
+            <RadioButton
+                android:id="@+id/rb_about_o2o"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/rb_main_right_selector"
+                android:button="@null"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/rb_padding_left"
+                android:text="电商平台"
+                android:textSize="18sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginLeft="47.9dp"
+                android:background="#FFE7E9ED" />
+
+            <RadioButton
+                android:id="@+id/rb_xplain"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@drawable/rb_main_right_selector"
+                android:button="@null"
+                android:gravity="center_vertical"
+                android:paddingLeft="@dimen/rb_padding_left"
+                android:text="使用说明"
+                android:textSize="18sp" />
+
+        </RadioGroup>
+
+    </RelativeLayout>
+
+
+</android.support.design.widget.NavigationView>

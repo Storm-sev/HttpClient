@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Chengnfc</string>
+    <string name="main_title">诚品宝</string>
+    <string name="main_subtitle">国际非遗商品防伪溯源平台</string>
+    <string name="scan_qr_code">二维码</string>
+    <string name="scan_input">防伪码</string>
+    <string name="title_input_scan">防伪码查询</string>
 </resources>

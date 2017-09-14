@@ -1,19 +1,23 @@
-package com.cheng315.chengnfc.utils;
+package com.cheng315.lib.utils;
 
+
+import org.reactivestreams.Subscriber;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.processors.FlowableProcessor;
+import io.reactivex.processors.PublishProcessor;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 /**
  * Created by Storm on 2017/6/1
@@ -22,22 +26,32 @@ import rx.subscriptions.CompositeSubscription;
 
 public class RxBus {
 
+    private static final String TAG = RxBus.class.getSimpleName();
+
     private static volatile RxBus INSTANCE;
-    private Subject<Object, Object> _mBus = new SerializedSubject<Object, Object>(PublishSubject.create());
+
+    private Subject<Object> _mBus;
+    /**
+     * 有背压处理的rxbus
+     */
+    private FlowableProcessor<Object> _mBackpressureBus;
+
+
     // 类似于粘性广播
     private static Map<Class<?>, Object> mStrckyEventMap;
 
     //rxbus 订阅管理 CompositeSubscription 管理多个
-    private HashMap<String, CompositeSubscription> mSubscriptionmMap;
-
+    private HashMap<String, CompositeDisposable> mSubscriptionmMap;
 
     private RxBus() {
         //ConcurrentHashMap 是线程安全的
+        _mBus = PublishSubject.create().toSerialized();
+        _mBackpressureBus = PublishProcessor.create().toSerialized();
         mStrckyEventMap = new ConcurrentHashMap<>();
     }
 
 
-    public static RxBus getInstace() {
+    public static RxBus getInstance() {
         if (INSTANCE == null) {
             synchronized (RxBus.class) {
                 if (INSTANCE == null) {
@@ -51,17 +65,28 @@ public class RxBus {
 
 
     /**
-     * 发送普通数据
+     * 发送普通的数据
      *
      * @param event
      */
     public void send(Object event) {
         _mBus.onNext(event);
+
+    }
+
+    /**
+     * 发送 有背压的数据
+     *
+     * @param event
+     */
+    public void sendBackpressure(Object event) {
+
+        _mBackpressureBus.onNext(event);
     }
 
 
     /**
-     * 接受普通传递的数据8
+     * 获取普通数据传递的数据
      */
     public <T> Observable<T> toObservable(Class<T> eventType) {
 
@@ -69,11 +94,50 @@ public class RxBus {
     }
 
 
-    public <T> Subscription doSubscribe(Class<T> eventType, Action1<T> next, Action1<Throwable> error) {
+    /**
+     * 获取 背压处理数据
+     *
+     * @param eventType
+     * @param <T>
+     * @return
+     */
+    public <T> Flowable<T> toFlowable(Class<T> eventType) {
+        return _mBackpressureBus.ofType(eventType);
+    }
 
 
+    /**
+     * 背压的处理
+     *
+     * @return
+     */
+    public <T> Flowable doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
+
+        Flowable<T> tFlowable = toFlowable(eventType)
+                .onBackpressureLatest()
+                .subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+
+        tFlowable
+                .subscribe(subscriber);
+
+        return tFlowable;
+
+    }
+//    public <T> void doFlowable(Class<T> eventType, Consumer<T> next, Consumer<Throwable> error) {
+//
+//        toFlowable(eventType)
+//                .onBackpressureLatest()
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(next, error);
+//
+//    }
+
+    public <T> Disposable doSubscribe(Class<T> eventType, Consumer<T> next, Consumer<Throwable> error) {
         return toObservable(eventType)
-                .onBackpressureBuffer()// 背压处理
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(next, error);
@@ -84,7 +148,7 @@ public class RxBus {
     /**
      * 添加订阅者到集合
      */
-    public void addSubscription(Object o, Subscription subscription) {
+    public void addSubscription(Object o, Disposable disposable) {
 
         if (mSubscriptionmMap == null) {
             mSubscriptionmMap = new HashMap<>();
@@ -94,12 +158,12 @@ public class RxBus {
         String key = o.getClass().getName();
 
         if (mSubscriptionmMap.get(key) != null) {
-            mSubscriptionmMap.get(key).add(subscription);
+            mSubscriptionmMap.get(key).add(disposable);
 
         } else {
-            CompositeSubscription compositeSubscription = new CompositeSubscription();
-            compositeSubscription.add(subscription);
-            mSubscriptionmMap.put(key, compositeSubscription);
+            CompositeDisposable compositeDisposable = new CompositeDisposable();
+            compositeDisposable.add(disposable);
+            mSubscriptionmMap.put(key, compositeDisposable);
         }
 
 
@@ -112,6 +176,11 @@ public class RxBus {
      */
     public boolean hasObservers() {
         return _mBus.hasObservers();
+    }
+
+
+    public boolean hasFlowable() {
+        return _mBackpressureBus.hasSubscribers();
     }
 
 
@@ -184,7 +253,7 @@ public class RxBus {
 
         if (mSubscriptionmMap.get(key) != null) {
 
-            mSubscriptionmMap.get(key).unsubscribe();
+            mSubscriptionmMap.get(key).dispose();
         }
 
         mSubscriptionmMap.remove(key);

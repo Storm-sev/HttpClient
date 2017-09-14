@@ -1,8 +1,12 @@
 package com.cheng315.lib.httpclient;
 
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
+import io.reactivex.ObservableSource;
+import io.reactivex.ObservableTransformer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * Created by Administrator on 2017/8/28.
@@ -15,18 +19,18 @@ public class RxHelper {
     /**
      * rx线程切换
      */
-    public static <T> Observable.Transformer<T, T> IO_Main() {
+    public static <T> ObservableTransformer<T, T> IO_Main() {
 
-        return new Observable.Transformer<T, T>() {
+        return new ObservableTransformer<T, T>() {
             @Override
-            public Observable<T> call(Observable<T> tObservable) {
+            public ObservableSource<T> apply(@NonNull io.reactivex.Observable<T> upstream) {
 
-                return tObservable.subscribeOn(Schedulers.io())
+                return upstream.subscribeOn(Schedulers.io())
                         .unsubscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread());
             }
-
         };
+
     }
 
 }

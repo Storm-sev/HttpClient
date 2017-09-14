@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="#FFFFFF"
+    tools:context="com.cheng315.chengnfc.MainActivity1">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.cheng315.chengnfc.customview.MainActionbar
+            android:id="@+id/main_actionbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_actionbar_height" />
+
+
+        <!-- 先用 imageview 来代替-->
+        <ImageView
+            android:id="@+id/banner"
+            android:layout_width="match_parent"
+            android:layout_height="360dp"
+            android:layout_marginLeft="@dimen/main_margin_left"
+            android:layout_marginRight="@dimen/main_margin_left"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/banner"
+            android:scaleType="fitXY" />
+
+
+        <include layout="@layout/bottom_navigation" />
+    </LinearLayout>
+
+
+    <include layout="@layout/main_right" />
+
+
+</android.support.v4.widget.DrawerLayout>

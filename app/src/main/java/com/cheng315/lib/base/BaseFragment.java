@@ -13,11 +13,12 @@ import butterknife.Unbinder;
 
 /**
  * Created by Administrator on 2017/9/4.
- *
  */
 
-public abstract class BaseFragment extends Fragment{
+public abstract class BaseFragment extends Fragment {
 
+
+    private static final String TAG = BaseFragment.class.getSimpleName();
 
     protected Context mContext;
     protected View mRootView;
@@ -31,7 +32,6 @@ public abstract class BaseFragment extends Fragment{
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
         this.mContext = context;
     }
 
@@ -42,14 +42,17 @@ public abstract class BaseFragment extends Fragment{
         if (mRootView == null) {
             mRootView = inflater.inflate(attachLayoutRes(), null);
             unbinder = ButterKnife.bind(this, mRootView);
-            initViews();
-
-
         }
 
         return mRootView;
     }
 
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        initViews();
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -85,9 +88,10 @@ public abstract class BaseFragment extends Fragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(unbinder != null) {
+        if (unbinder != null) {
             unbinder.unbind();
-
         }
     }
+
+
 }

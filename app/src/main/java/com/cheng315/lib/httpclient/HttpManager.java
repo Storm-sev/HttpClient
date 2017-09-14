@@ -1,22 +1,25 @@
 package com.cheng315.lib.httpclient;
 
 import com.cheng315.chengnfc.bean.VersionBean;
+import com.cheng315.chengnfc.utils.LogUtils;
 import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 import com.cheng315.lib.httpclient.downloadfile.FileSubscriber;
-import com.cheng315.chengnfc.utils.LogUtils;
-import com.cheng315.chengnfc.utils.RxBus;
+import com.cheng315.lib.utils.RxBus;
 
 import java.io.File;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+
 
 /**
  * Created by Administrator on 2017/8/25.
@@ -25,7 +28,7 @@ import rx.schedulers.Schedulers;
 public class HttpManager {
 
 
-    private static final String TAG = "HttpManager";
+    private static final String TAG = HttpManager.class.getSimpleName();
 
 
     /**
@@ -37,11 +40,13 @@ public class HttpManager {
         Observable<ResponseBody> responseBodyObservable
                 = HttpClientManager.getHttpClientService().downLoadNewApk(url);
 
-        responseBodyObservable.subscribeOn(Schedulers.io())
+
+        responseBodyObservable
+                .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .doOnNext(new Action1<ResponseBody>() {
+                .doOnNext(new Consumer<ResponseBody>() {
                     @Override
-                    public void call(ResponseBody responseBody) {
+                    public void accept(ResponseBody responseBody) throws Exception {
                         fileCallBack.saveFile(responseBody);
                     }
                 })
@@ -95,44 +100,91 @@ public class HttpManager {
         versionBeanObservable.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<VersionBean>() {
+                .subscribe(new Observer<VersionBean>() {
+                    private Disposable mDisposable;
                     @Override
-                    public void onCompleted() {
+                    public void onSubscribe(@NonNull Disposable d) {
+                            this.mDisposable = d;
 
-                        LogUtils.d(TAG, "onCompleted : 请求完成");
+                        LogUtils.d(TAG,"检查版本  : onSubscribe");
 
-                        if (commonCallBack != null) {
-                            commonCallBack.onComplete();
-                        }
 
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onNext(@NonNull VersionBean versionBean) {
+                        if(commonCallBack != null) {
+                            commonCallBack.onNext(versionBean);
 
-                        LogUtils.d(TAG, "onError : " + e.toString());
+                        }
+                        RxBus.getInstance().send("发送数据");
+                        LogUtils.d(TAG,"检查版本 : onNext ");
 
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
                         if (commonCallBack != null) {
                             commonCallBack.onError(e);
 
                         }
+
+                        LogUtils.d(TAG, "检查版本   onError: " + e.toString());
+
+
                     }
 
                     @Override
-                    public void onNext(VersionBean versionBean) {
+                    public void onComplete() {
 
-
-                        int code = Integer.valueOf(versionBean.getCode());
+                        LogUtils.d(TAG,"检查版本 :  onComplete");
 
                         if (commonCallBack != null) {
-                            commonCallBack.onNext(versionBean);
+                            commonCallBack.onComplete();
 
                         }
 
-                        RxBus.getInstace().send("发送数据到 rxbus");
 
                     }
                 });
+
+//                .subscribe(new Subscriber<VersionBean>() {
+//                    @Override
+//                    public void onCompleted() {
+//
+//                        LogUtils.d(TAG, "检查版本------onCompleted : 请求完成");
+//
+//                        if (commonCallBack != null) {
+//                            commonCallBack.onComplete();
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                        LogUtils.d(TAG, "检查版本 --------- onError : " + e.toString());
+//
+//                        if (commonCallBack != null) {
+//                            commonCallBack.onError(e);
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onNext(VersionBean versionBean) {
+//                        LogUtils.d(TAG, "检查版本 ---------  onNext :");
+//                        int code = Integer.valueOf(versionBean.getCode());
+//
+//                        if (commonCallBack != null) {
+//                            commonCallBack.onNext(versionBean);
+//
+//                        }
+//
+//                        RxBus.getInstace().send("发送数据到 rxbus");
+//
+//                    }
+//                });
 
     }
 

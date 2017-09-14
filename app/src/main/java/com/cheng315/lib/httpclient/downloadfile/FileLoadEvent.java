@@ -28,7 +28,4 @@ public class FileLoadEvent {
         this.progress = progress;
     }
 
-
-
-
 }

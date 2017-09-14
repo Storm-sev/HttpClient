@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="menu_margin_right">25dp</dimen>
+    <dimen name="menu_margin_top">8.33dp</dimen>
+    <dimen name="title_margin_top">28dp</dimen>
+    <dimen name="main_margin_left">24dp</dimen>
+    <!--<dimen name="rg_margin_top">104.3dp</dimen>-->
+    <dimen name="rg_margin_top">128dp</dimen>
+
+    <dimen name="rg_width">256.0dp</dimen>
+    <dimen name="rb_padding_left">47.9dp</dimen>
+    <dimen name="scan_actionbar_height">50dp</dimen>
+</resources>

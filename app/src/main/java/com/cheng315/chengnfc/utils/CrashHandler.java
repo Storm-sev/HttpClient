@@ -5,7 +5,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,11 +16,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/8/30.
- * 系统崩溃处理
+ *  捕获全局的系统异常处理
  */
 
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
@@ -34,8 +40,9 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     private static final String PATH = Environment.getExternalStorageDirectory()
             .getPath() + "/cheng_nfc/log/";
 
-
-    // 文件名
+    /**
+     * 文件名
+     */
     private static final String FILE_NAME = "Crash";
 
     /**
@@ -50,6 +57,17 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     private Context mContext;
 
+    /**
+     * 时间
+     */
+    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+
+    /**
+     * 存储设备的参数信息
+     */
+    private Map<String, String> phoneInfo = new HashMap<>();
+
 
     private CrashHandler() {
 
@@ -61,84 +79,118 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     }
 
-
     /**
-     * 这里做初始化操作
+     * 初始化
      */
     public void init(Context context) {
-
+        this.mContext = context.getApplicationContext();
         mDefaultCrashHandler = Thread.getDefaultUncaughtExceptionHandler();
         //当前实例作为系统默认的异常处理
-        Thread.setDefaultUncaughtExceptionHandler(mDefaultCrashHandler);
-        this.mContext = context.getApplicationContext();
-
+        Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {
 
-        // 异常信息保存到本地
-        try {
-            saveExceptionToSDCard(ex);
-        } catch (IOException e) {
+
+        if (!handlerException(ex) && mDefaultCrashHandler != null) {
+
+            mDefaultCrashHandler.uncaughtException(thread, ex);
+
+        } else {
+
+            SystemClock.sleep(3000);
+
+            // kill progress
+            // 退出
+            android.os.Process.killProcess(android.os.Process.myPid());
+            System.exit(1);
+
+
         }
-        // 把异常上传到服务器
 
 
     }
 
-
     /**
-     *
+     * 自定义错误异常处理 搜集错误的异常信息;
      */
-    private void saveExceptionToSDCard(final Throwable ex) throws  IOException{
+    private boolean handlerException(Throwable ex) {
 
-        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_BAD_REMOVAL)) {
-            if (DEBUG) {
-                Log.w(TAG, "sdcard unmounted, skip dump exception");
-                return;
+        Log.d(TAG, "handlerException .... start");
+        if (ex == null) {
+            return false;
+        }
+
+        new Thread() {
+            @Override
+            public void run() {
+
+                Looper.prepare();
+                Toast.makeText(mContext, "程序出现错误.即将退出", Toast.LENGTH_LONG).show();
+                Looper.loop();
             }
+        }.start();
 
+        // 获取设备的信息
+        saveException2sdCard(ex);
+
+        return true;
+
+    }
+
+    private void saveException2sdCard(final Throwable ex) {
+
+        Log.d(TAG, "saveException to sdCard is  ... start: ");
+
+        String filePath = null;
+
+        if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+
+            Log.d(TAG, " sdCard is unmounted ");
+
+            filePath = mContext.getFilesDir().getPath() + "/cheng_nfc/log/";
+        } else {
+
+            Log.d(TAG, " sdCart is mounted ... ");
+            filePath = Environment.getExternalStorageDirectory().getPath() + "/cheng_nfc/log/";
         }
 
-        File dir = new File(PATH);
 
-        if (!dir.exists()) {
-            Log.d(TAG, "log dir not exists,ready create");
-            dir.mkdirs();
+        // 获取存储的文件路径
+        File fileDir = new File(filePath);
+        if (!fileDir.exists()) {
+
+            Log.d(TAG, "LOG file is not exists , now ready create");
+            fileDir.mkdirs();
         }
 
 
-        //获取时间
-        long currentMillis = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
+        //当前时间
+        final String curTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(currentTime));
 
-        final String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(currentMillis));
+        final File file = new File(filePath + FILE_NAME + FILE_NAME_SUFFIX);
 
-        final File file = new File(PATH + FILE_NAME + FILE_NAME_SUFFIX);
 
-        /**
-         * 开启一个子线程写入
-         */
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-
                 try {
                     PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-                    pw.println(time);
+                    pw.print(curTime);
 
                     dumpPhoneInfo(pw,ex);
+
                     pw.close();
 
-                } catch (Exception e) {
+                    Log.d(TAG, "exception file is complete . ");
 
-                    Log.e(TAG, "dump crash info filed : " + Log.getStackTraceString(ex));
-
-
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
 
             }
         }).start();
@@ -146,47 +198,52 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
 
     }
 
-
     /**
      * 获取当前设备的信息
      */
-    private void dumpPhoneInfo(PrintWriter pw, Throwable ex) throws PackageManager.NameNotFoundException {
+    private void dumpPhoneInfo(PrintWriter pw, Throwable ex) {
 
         Log.d(TAG, "dumpPhoneInfo ...... start ");
 
-        PackageManager pm =
-                mContext.getPackageManager();
+        try {
+            PackageManager pm =
+                    mContext.getPackageManager();
 
-        PackageInfo pi
-                = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_ACTIVITIES);
-
-
-        pw.print("App Version :　");
-        pw.print(pi.versionName);
-        //
-        pw.print("_" );
-        pw.println(pi.versionCode);
+            PackageInfo pi
+                    = pm.getPackageInfo(mContext.getPackageName(), PackageManager.GET_ACTIVITIES);
 
 
-        //获取android 的版本号码
-        pw.print("OS Version : ");
-        pw.print(Build.VERSION.RELEASE);
-        pw.print(" _SDK : ");
-        pw.println(Build.VERSION.SDK_INT);
-
-        // 获取手机制造商
-
-        pw.print("Model : ");
-        pw.print(Build.MODEL);
+            pw.print("App Version :　");
+            pw.print(pi.versionName);
+            //
+            pw.print("_");
+            pw.println(pi.versionCode);
 
 
-        // 获取的CPu 架构
-        pw.print("CPU ABI : ");
-        pw.println(Build.CPU_ABI);
-        pw.println();
+            //获取android 的版本号码
+            pw.print("OS Version : ");
+            pw.print(Build.VERSION.RELEASE);
+            pw.print(" _SDK : ");
+            pw.println(Build.VERSION.SDK_INT);
 
-        // 异常信息
-        ex.printStackTrace(pw);
+            // 获取手机制造商
+
+            pw.print("Model : ");
+            pw.print(Build.MODEL);
+
+
+            // 获取的CPu 架构
+            pw.print("CPU ABI : ");
+            pw.println(Build.CPU_ABI);
+            pw.println();
+
+            // 异常信息
+            ex.printStackTrace(pw);
+        } catch (PackageManager.NameNotFoundException e) {
+
+            Log.d(TAG, "Error while collect package info ;", e);
+
+        }
 
     }
 

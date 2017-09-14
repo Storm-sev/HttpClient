@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_action_bar_input"
+    android:fitsSystemWindows="true"
+    tools:context="com.cheng315.chengnfc.InputScanActivity">
+
+
+    <include layout="@layout/scan_actionbar" />
+
+
+    <RelativeLayout
+        android:id="@+id/rl_scan"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/action_bar_scan"
+        android:background="@drawable/bg_input_scan">
+
+
+        <LinearLayout
+            android:id="@+id/ll_input_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="64dp"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="联合国教科文组织"
+                android:textColor="@color/title_color"
+                android:textSize="24sp"
+                android:textStyle="bold"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="国际非物质文化遗产大数据平台"
+                android:textColor="#FF3F3F3F"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_input_scan"
+            android:layout_width="wrap_content"
+            android:layout_height="56.3dp"
+            android:layout_below="@id/ll_input_title"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40.3dp"
+            android:background="@drawable/bg_input_scan_input"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingLeft="16dp"
+                android:paddingRight="11dp"
+                android:text="ID"
+                android:textSize="24sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:layout_marginTop="12dp" />
+
+
+            <EditText
+                android:id="@+id/et_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="请输入12商品位防伪码"
+                android:maxLines="1"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btn_input_submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_input_scan"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="24.3dp"
+            android:background="@drawable/bg_btn_input"
+            android:text="查询"
+            android:textColor="#FFFFFF" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

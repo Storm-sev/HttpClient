@@ -34,6 +34,9 @@ public class MApplication extends Application {
 
         editTextValidator = new EditTextValidator(this);
 
+        // 获取全局异常信息
+//        CrashHandler.getInstance().init(this);
+
     }
 
 

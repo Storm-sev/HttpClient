@@ -10,11 +10,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
 
+import com.cheng315.chengnfc.MApplication;
 import com.cheng315.chengnfc.R;
-import com.cheng315.lib.httpclient.HttpManager;
-import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 import com.cheng315.chengnfc.utils.AppUtils;
 import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.httpclient.HttpManager;
+import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 
 import java.io.File;
 
@@ -27,7 +28,7 @@ import okhttp3.ResponseBody;
 
 public class UpdateService extends Service {
 
-    private static final String TAG = "UpdateService";
+    private static final String TAG = UpdateService.class.getSimpleName();
 
     public static final String APK_URL = "apk_url";
 
@@ -38,9 +39,6 @@ public class UpdateService extends Service {
     private RemoteViews mRemoteViews;
 
     private int preProgress;
-
-
-
 
     @Nullable
     @Override
@@ -55,8 +53,6 @@ public class UpdateService extends Service {
         createNotification();
 
         downLoadApk(intent);
-
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -97,6 +93,13 @@ public class UpdateService extends Service {
                     }
 
 
+                    File cacheFile = new File(MApplication.appContext.getCacheDir(), "HttpCache");
+                    if (cacheFile.exists()) {
+                        LogUtils.d(TAG, "获取的文件存在");
+                    } else {
+                        LogUtils.d(TAG, " 获取的缓存文件不存在 ");
+                    }
+
                     stopSelf();
                 }
 
@@ -109,7 +112,9 @@ public class UpdateService extends Service {
                 @Override
                 public void onProgress(float progress, long total) {
 
-                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
+//                    LogUtils.d(TAG,"获取当前进度  :-----------------  " + progress * 100);
+
+//                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
 
                     updateUI(progress);
 

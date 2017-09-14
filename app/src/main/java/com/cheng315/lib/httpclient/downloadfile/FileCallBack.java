@@ -1,7 +1,10 @@
 package com.cheng315.lib.httpclient.downloadfile;
 
 import com.cheng315.chengnfc.utils.LogUtils;
-import com.cheng315.chengnfc.utils.RxBus;
+import com.cheng315.lib.utils.RxBus;
+
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import okhttp3.ResponseBody;
-import rx.functions.Action1;
 
 /**
  * Created by Administrator on 2017/8/25.
@@ -103,7 +105,7 @@ public abstract class FileCallBack<T> {
      */
     public void unSubscribe() {
 
-        RxBus.getInstace().unSubscribe(this);
+        RxBus.getInstance().unSubscribe(this);
 
 
     }
@@ -112,23 +114,39 @@ public abstract class FileCallBack<T> {
     //订阅加载进度条
     public void subscribeLoadProgress() {
 
-        RxBus.getInstace().doSubscribe(FileLoadEvent.class, new Action1<FileLoadEvent>() {
-            @Override
-            public void call(FileLoadEvent fileLoadEvent) {
+            RxBus.getInstance().doFlowable(FileLoadEvent.class, new Subscriber<FileLoadEvent>() {
 
-                long progress = fileLoadEvent.getProgress();
-                long total = fileLoadEvent.getTotal();
+                Subscription sub;
+                @Override
+                public void onSubscribe(Subscription s) {
+                    this.sub = s;
 
-                onProgress(progress * 1.0f / total, total);
+                    sub.request(1);
+                }
 
-            }
-        }, new Action1<Throwable>() {
-            @Override
-            public void call(Throwable throwable) {
+                @Override
+                public void onNext(FileLoadEvent fileLoadEvent) {
 
-            }
-        });
+                    long progress = fileLoadEvent.getProgress();
+                    long total = fileLoadEvent.getTotal();
 
+                    onProgress(progress * 1.0f / total, total);
+
+                    sub.request(1);
+                }
+
+                @Override
+                public void onError(Throwable t) {
+
+
+
+                }
+
+                @Override
+                public void onComplete() {
+
+                }
+            });
 
     }
 
