@@ -114,7 +114,7 @@ public class UpdateService extends Service {
 
 //                    LogUtils.d(TAG,"获取当前进度  :-----------------  " + progress * 100);
 
-//                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
+                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
 
                     updateUI(progress);
 

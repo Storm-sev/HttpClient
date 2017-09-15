@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
 import okhttp3.ResponseBody;
 
 /**
@@ -110,7 +109,7 @@ public abstract class FileCallBack<T> {
 
 //        RxBus.getInstance().unSubscribe(this);
 
-        RxBus.getInstance().unSubscribe(this);
+
         
     }
 
@@ -119,7 +118,7 @@ public abstract class FileCallBack<T> {
     //订阅加载进度条
     public void subscribeLoadProgress() {
 
-        Disposable disposable = RxBus.getInstance().doFlowable(FileLoadEvent.class, new Subscriber<FileLoadEvent>() {
+      RxBus.getInstance().doFlowable(FileLoadEvent.class, new Subscriber<FileLoadEvent>() {
 
             Subscription sub;
 
@@ -151,7 +150,6 @@ public abstract class FileCallBack<T> {
         });
 
         //添加订阅
-        RxBus.getInstance().addSubscription(this, disposable);
 
     }
 

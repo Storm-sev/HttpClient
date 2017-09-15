@@ -63,10 +63,9 @@ public class ProgressResponseBody extends ResponseBody {
 
                 long bytesRead = super.read(sink, byteCount);
                 bytesReaded += bytesRead == -1 ? 0 : bytesRead;
-                //实时发送当前的字节数 和总长度
-                // 使用RxbuS 发送数据
 //                RxBus.getInstace().send(new FileLoadEvent(responseBody.contentLength(), bytesReaded));
                 LogUtils.d(TAG,"获取的文件进度 ：　" + bytesReaded);
+                // 背压
                 RxBus.getInstance().sendBackpressure(new FileLoadEvent(responseBody.contentLength(), bytesReaded));
 
                 return bytesRead;

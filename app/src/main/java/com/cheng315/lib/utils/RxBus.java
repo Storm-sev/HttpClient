@@ -111,7 +111,7 @@ public class RxBus {
      *
      * @return
      */
-    public <T> Disposable doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
+    public <T> Subscriber doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
 //
 //        Flowable<T> tFlowable = toFlowable(eventType)
 //                .onBackpressureLatest()
@@ -130,7 +130,7 @@ public class RxBus {
 
         // 处理背压的情况下添加参数 根据不同的背压策略来定制不同的请求方式.
 
-        return (Disposable) toFlowable(eventType)
+        return toFlowable(eventType)
                 .onBackpressureLatest()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

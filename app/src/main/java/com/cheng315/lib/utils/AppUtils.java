@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
+import com.cheng315.chengnfc.MApplication;
+
 import java.io.File;
 
 /**
@@ -14,6 +16,16 @@ import java.io.File;
 public class AppUtils {
 
     private static final String TAG = "AppUtils";
+
+
+    /**
+     * 获取 appliaction context
+     * @return
+     */
+    public static Context getAppContext(){
+
+        return MApplication.appContext;
+    }
 
     /**
      * install apk
