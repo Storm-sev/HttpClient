@@ -1,7 +1,7 @@
 package com.cheng315.lib.httpclient;
 
 import com.cheng315.chengnfc.MApplication;
-import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.httpclient.downloadfile.ProgressInterceptor;
 import com.cheng315.lib.httpclient.interceptor.CacheInterceptor;
 
@@ -100,7 +100,6 @@ public class HttpClientManager {
                     .baseUrl(Api.BASE_IMG_URL)
                     .build()
                     .create(HttpClientImgService.class);
-
         }
 
         return mHttpClientImgService;

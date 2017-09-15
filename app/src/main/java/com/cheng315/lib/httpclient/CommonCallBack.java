@@ -7,20 +7,13 @@ package com.cheng315.lib.httpclient;
 
 public interface CommonCallBack<T> {
 
-    // 请求之前
     void onStart();
 
-    // 发生错虚
     void onError(Throwable e);
 
-
-    // 请求成功
     void onComplete();
 
 
-    /**
-     * 获取请求的数据
-     */
     void onNext(T t);
 
 }

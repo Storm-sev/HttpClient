@@ -12,7 +12,7 @@ import okhttp3.Response;
 
 /**
  * Created by storm on 2017/9/12.
- * 离线缓存 拦截器
+ *  配置缓存库
  */
 
 public class CacheInterceptor implements Interceptor {

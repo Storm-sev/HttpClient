@@ -8,7 +8,7 @@ import butterknife.ButterKnife;
 
 /**
  * Created by Administrator on 2017/9/4.
- *
+ * BaseActivity 的基类
  */
 
 public  abstract class BaseActivity extends AppCompatActivity {

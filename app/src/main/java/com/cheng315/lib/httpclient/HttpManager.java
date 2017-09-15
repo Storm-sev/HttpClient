@@ -1,7 +1,7 @@
 package com.cheng315.lib.httpclient;
 
 import com.cheng315.chengnfc.bean.VersionBean;
-import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 import com.cheng315.lib.httpclient.downloadfile.FileSubscriber;
 import com.cheng315.lib.utils.RxBus;

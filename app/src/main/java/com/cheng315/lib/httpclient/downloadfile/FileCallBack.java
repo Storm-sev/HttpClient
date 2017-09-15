@@ -1,6 +1,6 @@
 package com.cheng315.lib.httpclient.downloadfile;
 
-import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.utils.RxBus;
 
 import org.reactivestreams.Subscriber;
@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import io.reactivex.Flowable;
+import io.reactivex.disposables.Disposable;
 import okhttp3.ResponseBody;
 
 /**
@@ -27,6 +29,7 @@ public abstract class FileCallBack<T> {
 
     private String fileDir;// 文件的存储路径
     private String fileName; // 文件的名字
+    private Flowable flowable;
 
 
     public FileCallBack(String fileDir, String fileName) {
@@ -105,48 +108,50 @@ public abstract class FileCallBack<T> {
      */
     public void unSubscribe() {
 
+//        RxBus.getInstance().unSubscribe(this);
+
         RxBus.getInstance().unSubscribe(this);
-
-
+        
     }
+
 
 
     //订阅加载进度条
     public void subscribeLoadProgress() {
 
-            RxBus.getInstance().doFlowable(FileLoadEvent.class, new Subscriber<FileLoadEvent>() {
+        Disposable disposable = RxBus.getInstance().doFlowable(FileLoadEvent.class, new Subscriber<FileLoadEvent>() {
 
-                Subscription sub;
-                @Override
-                public void onSubscribe(Subscription s) {
-                    this.sub = s;
+            Subscription sub;
 
-                    sub.request(1);
-                }
+            @Override
+            public void onSubscribe(Subscription s) {
+                this.sub = s;
+                sub.request(1);
+            }
 
-                @Override
-                public void onNext(FileLoadEvent fileLoadEvent) {
+            @Override
+            public void onNext(FileLoadEvent fileLoadEvent) {
 
-                    long progress = fileLoadEvent.getProgress();
-                    long total = fileLoadEvent.getTotal();
+                long progress = fileLoadEvent.getProgress();
+                long total = fileLoadEvent.getTotal();
 
-                    onProgress(progress * 1.0f / total, total);
+                onProgress(progress * 1.0f / total, total);
+                sub.request(1);
+            }
 
-                    sub.request(1);
-                }
+            @Override
+            public void onError(Throwable t) {
 
-                @Override
-                public void onError(Throwable t) {
+            }
 
+            @Override
+            public void onComplete() {
 
+            }
+        });
 
-                }
-
-                @Override
-                public void onComplete() {
-
-                }
-            });
+        //添加订阅
+        RxBus.getInstance().addSubscription(this, disposable);
 
     }
 

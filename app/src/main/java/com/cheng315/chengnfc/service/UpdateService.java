@@ -13,7 +13,7 @@ import android.widget.RemoteViews;
 import com.cheng315.chengnfc.MApplication;
 import com.cheng315.chengnfc.R;
 import com.cheng315.chengnfc.utils.AppUtils;
-import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.httpclient.HttpManager;
 import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 

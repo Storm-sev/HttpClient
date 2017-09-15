@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.cheng315.chengnfc.bean.VersionBean;
 import com.cheng315.chengnfc.service.UpdateService;
-import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.utils.RxBus;
 import com.cheng315.chengnfc.utils.validations.ValidationModel;
 import com.cheng315.chengnfc.utils.validations.validation.UserNameValidation;

@@ -111,30 +111,33 @@ public class RxBus {
      *
      * @return
      */
-    public <T> Flowable doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
-
-        Flowable<T> tFlowable = toFlowable(eventType)
-                .onBackpressureLatest()
-                .subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-
-
-        tFlowable
-                .subscribe(subscriber);
-
-        return tFlowable;
-
-    }
-//    public <T> void doFlowable(Class<T> eventType, Consumer<T> next, Consumer<Throwable> error) {
+    public <T> Disposable doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
 //
-//        toFlowable(eventType)
+//        Flowable<T> tFlowable = toFlowable(eventType)
 //                .onBackpressureLatest()
 //                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(next, error);
+//                .unsubscribeOn(Schedulers.io())
+//                .doOnCancel(new Action() {
+//                    @Override
+//                    public void run() throws Exception {
+//                        LogUtils.d(TAG, "Flowable --------------------取消订阅");
+//                    }
+//                })
+//                .observeOn(AndroidSchedulers.mainThread());
 //
-//    }
+//        tFlowable
+//                .subscribeWith(subscriber);
+
+        // 处理背压的情况下添加参数 根据不同的背压策略来定制不同的请求方式.
+
+        return (Disposable) toFlowable(eventType)
+                .onBackpressureLatest()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(subscriber);
+
+
+    }
 
     public <T> Disposable doSubscribe(Class<T> eventType, Consumer<T> next, Consumer<Throwable> error) {
         return toObservable(eventType)

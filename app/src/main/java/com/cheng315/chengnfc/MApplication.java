@@ -3,7 +3,7 @@ package com.cheng315.chengnfc;
 import android.app.Application;
 import android.content.Context;
 
-import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.chengnfc.utils.validations.EditTextValidator;
 
 /**

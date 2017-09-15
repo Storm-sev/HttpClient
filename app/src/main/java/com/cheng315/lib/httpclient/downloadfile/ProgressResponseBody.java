@@ -1,6 +1,6 @@
 package com.cheng315.lib.httpclient.downloadfile;
 
-import com.cheng315.chengnfc.utils.LogUtils;
+import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.utils.RxBus;
 
 import java.io.IOException;
