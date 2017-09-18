@@ -2,6 +2,8 @@ package com.cheng315.lib.httpclient.http;
 
 import com.cheng315.lib.httpclient.Api;
 import com.cheng315.lib.httpclient.HttpClientService;
+import com.cheng315.lib.httpclient.downloadfile.DownLoadService;
+import com.cheng315.lib.httpclient.downloadfile.ProgressInterceptor;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -37,57 +39,48 @@ public class RetrofitManager {
     }
 
 
-    public RetrofitManager init() {
+    public Retrofit init() {
 
+        if (mRetrofit == null) {
+            mRetrofit = new Retrofit.Builder()
+                    .baseUrl(Api.BASE_URL)
+                    .client(OkHttpClientManager.getInstance().init())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+        }
 
-        mRetrofit = new Retrofit.Builder()
-                .baseUrl(Api.BASE_URL)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(OkHttpClientManager.getGlobalClient())
-                .build();
-
-        return this;
+        return mRetrofit;
     }
 
 
     /**
-     * 全局的 retrofit
+     *  获取下载的接口.
      *
      * @return
      */
-    public Retrofit getGlobalRetrofit() {
+    public DownLoadService getDownLoadService() {
 
-        return mRetrofit.newBuilder()
-                .client(OkHttpClientManager.getGlobalClient())
-                .build();
+        return init().newBuilder()
+                .client(OkHttpClientManager
+                        .getInstance()
+                        .init()
+                        .newBuilder()
+                        .addNetworkInterceptor(new ProgressInterceptor())
+                        .build())
+                .build().create(DownLoadService.class);
     }
 
 
     /**
-     * 下载文件 retrofit
-     *
      * @return
      */
-    public Retrofit getDownLoadRetrofit() {
-        return mRetrofit
-                .newBuilder()
-                .client(OkHttpClientManager.getDownLoadOkHttpClient())
-                .build();
+    public HttpClientService getHttpClientService() {
+
+        return init().create(HttpClientService.class);
+
     }
 
-
-    /**
-     * 上传文件 retrofit
-     *
-     * @return
-     */
-    public Retrofit getUpdateRetrofit() {
-        return mRetrofit
-                .newBuilder()
-                .client(OkHttpClientManager.getUpdateClnt())
-                .build();
-    }
 
 
 }

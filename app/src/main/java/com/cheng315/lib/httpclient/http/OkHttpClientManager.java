@@ -20,83 +20,73 @@ public class OkHttpClientManager {
     private static final String TAG = OkHttpClientManager.class.getSimpleName();
 
     /**
-     * 获取下载的  OkHttpClient
-     *
-     * @return
+     * log 打印
      */
-    public static OkHttpClient getDownLoadOkHttpClient() {
-
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        CacheInterceptor cacheInterceptor = new CacheInterceptor();
-        Cache cache = new Cache(new File(AppUtils.getAppContext().getCacheDir(), "HttpCache"),
-                1024 * 1024 * 100);
-
-        ProgressInterceptor progressInterceptor = new ProgressInterceptor();
-
-        return new OkHttpClient.Builder()
-                .cache(cache)
-                .addInterceptor(httpLoggingInterceptor)
-                .retryOnConnectionFailure(true)
-                .addInterceptor(cacheInterceptor)
-                .addNetworkInterceptor(progressInterceptor)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .build();
-    }
-
+    private HttpLoggingInterceptor mHttpLoggingInterceptor;
 
     /**
-     * 全局的  OkHttpClient
-     *
-     * @return
+     * 缓存
      */
-    public static OkHttpClient getGlobalClient() {
+    private CacheInterceptor mCacheInterceptor;
 
 
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+    private volatile OkHttpClient mClient;
 
-        CacheInterceptor cacheInterceptor = new CacheInterceptor();
-        Cache cache = new Cache(new File(AppUtils.getAppContext().getCacheDir(), "HttpCache"),
-                1024 * 1024 * 100);
+    private static volatile OkHttpClientManager mInstance;
+    private final Cache mCache;
 
-        return new OkHttpClient.Builder()
-                .cache(cache)
-                .addInterceptor(cacheInterceptor)
-                .retryOnConnectionFailure(true)
-                .addInterceptor(httpLoggingInterceptor)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .build();
+
+    private OkHttpClientManager() {
+        mHttpLoggingInterceptor = new HttpLoggingInterceptor();
+
+        mHttpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        mCacheInterceptor = new CacheInterceptor();
+
+        mCache = new Cache(new File(AppUtils.getAppContext().getCacheDir(), "HttpCache"), 1024 * 1024 * 100);
+
     }
 
-    /**
-     * 上传 OkHttpClient
-     *
-     * @return
-     */
-    public static OkHttpClient getUpdateClnt() {
+    public static OkHttpClientManager getInstance() {
 
-        HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor();
-        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if (mInstance == null) {
+            synchronized (OkHttpClientManager.class) {
+                if (mInstance == null) {
+                    mInstance = new OkHttpClientManager();
+                }
+            }
+        }
 
-        CacheInterceptor cacheInterceptor = new CacheInterceptor();
-        Cache cache = new Cache(new File(AppUtils.getAppContext().getCacheDir(), "HttpCache"),
-                1024 * 1024 * 100);
-        return new OkHttpClient.Builder()
-                .cache(cache)
-                .addInterceptor(cacheInterceptor)
-                .retryOnConnectionFailure(true)
-                .addInterceptor(httpLoggingInterceptor)
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .build();
+        return mInstance;
     }
 
 
+    public OkHttpClient init() {
+
+        if (mClient == null) {
+
+            mClient = new OkHttpClient.Builder()
+                    .cache(mCache)
+                    .retryOnConnectionFailure(true)
+                    .addInterceptor(mHttpLoggingInterceptor)
+                    .addInterceptor(mCacheInterceptor)
+                    .connectTimeout(10, TimeUnit.SECONDS)
+                    .readTimeout(10, TimeUnit.SECONDS)
+                    .writeTimeout(10, TimeUnit.SECONDS)
+                    .build();
+
+        }
+
+        return mClient;
+    }
+
+
+    public OkHttpClient getDownLoadClient() {
+
+        if (mClient != null) {
+            mClient.newBuilder().addNetworkInterceptor(new ProgressInterceptor()).build();
+        }
+
+        return mClient;
+
+    }
 }

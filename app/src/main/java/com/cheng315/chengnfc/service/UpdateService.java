@@ -13,9 +13,9 @@ import android.widget.RemoteViews;
 import com.cheng315.chengnfc.MApplication;
 import com.cheng315.chengnfc.R;
 import com.cheng315.chengnfc.utils.AppUtils;
-import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.httpclient.HttpManager;
 import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
+import com.cheng315.lib.utils.LogUtils;
 
 import java.io.File;
 
@@ -52,8 +52,79 @@ public class UpdateService extends Service {
 
         createNotification();
 
-        downLoadApk(intent);
+//        downLoadApk(intent);
+
+        downLoadApk1(intent);
+
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    /**
+     * 测试
+     *
+     * @param intent
+     */
+    private void downLoadApk1(Intent intent) {
+        if (intent != null) {
+
+            final String apkUrl = intent.getStringExtra(UpdateService.APK_URL);
+
+            HttpManager.downLoadApk(apkUrl, new FileCallBack<ResponseBody>(
+                    Environment.getExternalStorageDirectory().getAbsolutePath(), AppUtils.getNameFromUrl(apkUrl)) {
+
+                @Override
+                public void onSuccess(ResponseBody responseBody) {
+
+                }
+
+                @Override
+                public void onStart() {
+
+                }
+
+                @Override
+                public void onComplete() {
+                    File fileDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+
+                    File file = new File(fileDir, AppUtils.getNameFromUrl(apkUrl));
+
+                    if (file.exists()) {
+
+                        AppUtils.installApp(UpdateService.this, file);
+                    }
+
+
+                    File cacheFile = new File(MApplication.appContext.getCacheDir(), "HttpCache");
+                    if (cacheFile.exists()) {
+                        LogUtils.d(TAG, "获取的文件存在");
+                    } else {
+                        LogUtils.d(TAG, " 获取的缓存文件不存在 ");
+                    }
+
+                    stopSelf();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+
+                }
+
+                @Override
+                public void onProgress(float progress, long total) {
+
+                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
+
+                    updateUI(progress);
+
+                }
+            });
+
+        } else {
+            stopSelf();
+
+        }
+
+
     }
 
     /**
@@ -111,8 +182,6 @@ public class UpdateService extends Service {
 
                 @Override
                 public void onProgress(float progress, long total) {
-
-//                    LogUtils.d(TAG,"获取当前进度  :-----------------  " + progress * 100);
 
                     LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
 

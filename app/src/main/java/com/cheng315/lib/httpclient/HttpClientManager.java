@@ -1,6 +1,7 @@
 package com.cheng315.lib.httpclient;
 
 import com.cheng315.chengnfc.MApplication;
+import com.cheng315.lib.httpclient.downloadfile.DownLoadService;
 import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.httpclient.downloadfile.ProgressInterceptor;
 import com.cheng315.lib.httpclient.interceptor.CacheInterceptor;
@@ -28,6 +29,8 @@ public class HttpClientManager {
     public static HttpClientService mHttpClientService;
     public static HttpClientImgService mHttpClientImgService;
 
+    public static DownLoadService mDownLoadService;
+
     public static Retrofit initRetrofit() {
 
         if (mRetrofit == null) {
@@ -49,7 +52,7 @@ public class HttpClientManager {
                             .addInterceptor(cacheInterceptor) // 添加网络缓存的 拦截器
                             .retryOnConnectionFailure(true)
                             .addInterceptor(httpLoggingInterceptor)
-                            .addNetworkInterceptor(progressInterceptor)
+//                            .addNetworkInterceptor(progressInterceptor)
                             .connectTimeout(10, TimeUnit.SECONDS)
                             .readTimeout(10, TimeUnit.SECONDS)
                             .writeTimeout(10, TimeUnit.SECONDS)
@@ -70,6 +73,21 @@ public class HttpClientManager {
             }
         }
         return mRetrofit;
+    }
+
+
+    /**
+     * 获取下载 接口
+     * @return
+     */
+    public static DownLoadService getDownLOadService() {
+
+        ProgressInterceptor progressInterceptor = new ProgressInterceptor();
+
+        httpClient.newBuilder().addNetworkInterceptor(progressInterceptor).build();
+
+
+        return initRetrofit().newBuilder().client(httpClient).build().create(DownLoadService.class);
     }
 
 
@@ -104,6 +122,11 @@ public class HttpClientManager {
 
         return mHttpClientImgService;
     }
+
+
+
+
+
 
 
 }

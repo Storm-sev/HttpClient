@@ -10,12 +10,12 @@ import android.widget.TextView;
 
 import com.cheng315.chengnfc.bean.VersionBean;
 import com.cheng315.chengnfc.service.UpdateService;
-import com.cheng315.lib.utils.LogUtils;
-import com.cheng315.lib.utils.RxBus;
 import com.cheng315.chengnfc.utils.validations.ValidationModel;
 import com.cheng315.chengnfc.utils.validations.validation.UserNameValidation;
 import com.cheng315.lib.httpclient.CommonCallBack;
 import com.cheng315.lib.httpclient.HttpManager;
+import com.cheng315.lib.utils.LogUtils;
+import com.cheng315.lib.utils.RxBus;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import java.util.regex.Pattern;
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private Button download_apk, btn_check, btn_send_sms, btn_to_main, btn_to_scan_nfc;
+    private Button download_apk, btn_check, btn_send_sms, btn_to_main, btn_to_scan_nfc,btn_down_apk,btn_check_version;
     private TextView textView;
     private EditText et_phone;
     private VersionBean mVersionBean;
@@ -96,6 +96,68 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
+        RxView.clicks(btn_down_apk)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+
+                        if (mVersionBean == null) {
+                            return;
+                        }
+                        startToUpdate();
+
+                    }
+                });
+
+        RxView.clicks(btn_check_version)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+
+                        checkVersion();
+
+
+                    }
+                });
+
+
+    }
+
+    /**
+     * 检查版本
+     */
+    private void checkVersion() {
+
+        HttpManager.checkVersion("V1_1.0", new CommonCallBack<VersionBean>() {
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+
+            @Override
+            public void onNext(VersionBean versionBean) {
+
+                LogUtils.d(TAG, "检查版本是否有更新传递的json数据  : " + versionBean.getCode());
+
+                LogUtils.d(TAG, "有新的版本更新 _ -------------");
+                if (!"0".equals(versionBean.getCode())) {
+                    return;
+                }
+
+
+            }
+
+        });
     }
 
 
@@ -134,6 +196,9 @@ public class MainActivity extends AppCompatActivity {
 
         et_phone = (EditText) findViewById(R.id.et_phone);
         btn_send_sms = (Button) findViewById(R.id.btn_send_sms);
+
+        btn_down_apk = (Button)findViewById(R.id.btn_down_apk);
+        btn_check_version = (Button)findViewById(R.id.btn_check_version);
 
 
     }
