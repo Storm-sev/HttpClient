@@ -92,11 +92,7 @@ public class HttpClientManager {
      * 数据请求接口
      */
     public static HttpClientService getHttpClientService() {
-        if (mHttpClientService == null) {
-            mHttpClientService = initRetrofit().create(HttpClientService.class);
-            LogUtils.d(TAG, "接口的实例 :  " + mHttpClientImgService);
-        }
-        return mHttpClientService;
+        return initRetrofit().create(HttpClientService.class);
     }
 
 

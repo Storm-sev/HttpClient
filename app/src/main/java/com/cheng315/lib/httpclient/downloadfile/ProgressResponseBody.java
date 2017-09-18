@@ -22,13 +22,18 @@ public class ProgressResponseBody extends ResponseBody {
 
     private static final String TAG = ProgressResponseBody.class.getSimpleName();
 
-
     private ResponseBody responseBody;
     private BufferedSource bufferedSource;
 
+    private FileLoadEvent fileLoadEvent;
+
+
     public ProgressResponseBody(ResponseBody responseBody) {
 
+
         this.responseBody = responseBody;
+        this.fileLoadEvent = new FileLoadEvent();
+
     }
 
     @Override
@@ -65,7 +70,9 @@ public class ProgressResponseBody extends ResponseBody {
 //                RxBus.getInstace().send(new FileLoadEvent(responseBody.contentLength(), bytesReaded));
 //                LogUtils.d(TAG,"获取的文件进度 ：　" + bytesReaded);
                 // 背压
-                RxBus.getInstance().sendBackpressure(new FileLoadEvent(responseBody.contentLength(), bytesReaded));
+                fileLoadEvent.setTotal(responseBody.contentLength());
+                fileLoadEvent.setProgress(bytesReaded);
+                RxBus.getInstance().sendBackpressure(fileLoadEvent);
 
                 return bytesRead;
             }

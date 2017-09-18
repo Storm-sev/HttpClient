@@ -11,8 +11,6 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
-import retrofit2.http.Streaming;
-import retrofit2.http.Url;
 
 /*
  * Created by Administrator on 2017/8/24.
@@ -26,15 +24,6 @@ public interface HttpClientService {
      */
     @GET("appVersion/upgrade?")
     Observable<VersionBean> checkVersionService(@Query("versionCode") String versionCode);
-
-
-    /**
-     * 下载最新apk
-     */
-    @Streaming
-    @POST
-    Observable<ResponseBody> downLoadNewApk(@Url String url);
-
 
     /**
      * 单文件上传

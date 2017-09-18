@@ -53,78 +53,7 @@ public class UpdateService extends Service {
         createNotification();
 
         downLoadApk(intent);
-
-//        downLoadApk1(intent);
-
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    /**
-     * 测试
-     *
-     * @param intent
-     */
-    private void downLoadApk1(Intent intent) {
-        if (intent != null) {
-
-            final String apkUrl = intent.getStringExtra(UpdateService.APK_URL);
-
-            HttpManager.load(apkUrl, new FileCallBack<ResponseBody>(
-                    Environment.getExternalStorageDirectory().getAbsolutePath(), AppUtils.getNameFromUrl(apkUrl)) {
-
-                @Override
-                public void onSuccess(ResponseBody responseBody) {
-
-                }
-
-                @Override
-                public void onStart() {
-
-                }
-
-                @Override
-                public void onComplete() {
-                    File fileDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-
-                    File file = new File(fileDir, AppUtils.getNameFromUrl(apkUrl));
-
-                    if (file.exists()) {
-
-                        AppUtils.installApp(UpdateService.this, file);
-                    }
-
-
-                    File cacheFile = new File(MApplication.appContext.getCacheDir(), "HttpCache");
-                    if (cacheFile.exists()) {
-                        LogUtils.d(TAG, "获取的文件存在");
-                    } else {
-                        LogUtils.d(TAG, " 获取的缓存文件不存在 ");
-                    }
-
-                    stopSelf();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-
-                }
-
-                @Override
-                public void onProgress(float progress, long total) {
-
-                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
-
-                    updateUI(progress);
-
-                }
-            });
-
-        } else {
-            stopSelf();
-
-        }
-
-
     }
 
     /**
@@ -183,7 +112,7 @@ public class UpdateService extends Service {
                 @Override
                 public void onProgress(float progress, long total) {
 
-                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
+//                    LogUtils.d(TAG, "获取的消息 : " + (int) (progress * 100) + "%" + "文件的总长度 : " + total);
 
                     updateUI(progress);
 
@@ -192,7 +121,7 @@ public class UpdateService extends Service {
             });
         } else {
 
-            // 结束自己
+            // xzish
             stopSelf();
 
         }
@@ -215,8 +144,6 @@ public class UpdateService extends Service {
             mRemoteViews.setTextViewText(R.id.tv_tool__title, "诚品宝:" + curProgress + "%");
 
             mNotificationManager.notify(0, mBuilder.build());
-
-
         }
 
         preProgress = curProgress;
@@ -241,7 +168,6 @@ public class UpdateService extends Service {
         mBuilder.setSmallIcon(R.drawable.icon_logo);
 
         mNotificationManager.notify(0, mBuilder.build());
-
 
     }
 

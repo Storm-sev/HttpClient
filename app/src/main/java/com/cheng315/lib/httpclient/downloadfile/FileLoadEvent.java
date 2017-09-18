@@ -13,6 +13,17 @@ public class FileLoadEvent {
     long progress;  //下载的进度
 
 
+    public FileLoadEvent() {
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public void setProgress(long progress) {
+        this.progress = progress;
+    }
+
     public long getTotal() {
         return total;
     }

@@ -23,6 +23,7 @@ import okhttp3.ResponseBody;
 
 /**
  * Created by Administrator on 2017/8/25.
+ *
  */
 
 public class HttpManager {
@@ -145,7 +146,6 @@ public class HttpManager {
                     }
                 });
 
-
     }
 
 
@@ -169,8 +169,6 @@ public class HttpManager {
                         this.mDisposable = d;
 
                         LogUtils.d(TAG, "检查版本  : onSubscribe");
-
-
                     }
 
                     @Override

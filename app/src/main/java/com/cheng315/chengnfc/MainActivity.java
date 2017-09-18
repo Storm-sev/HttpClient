@@ -24,7 +24,7 @@ import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private Button download_apk, btn_check, btn_send_sms, btn_to_main, btn_to_scan_nfc, btn_check_version;
     private TextView textView;
@@ -102,8 +102,6 @@ public class MainActivity extends AppCompatActivity {
                     public void accept(Object o) throws Exception {
 
                         checkVersion();
-
-
                     }
                 });
 
