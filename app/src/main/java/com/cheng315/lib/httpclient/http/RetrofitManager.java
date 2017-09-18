@@ -1,6 +1,7 @@
 package com.cheng315.lib.httpclient.http;
 
 import com.cheng315.lib.httpclient.Api;
+import com.cheng315.lib.httpclient.HttpClientService;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -16,6 +17,8 @@ public class RetrofitManager {
     private static volatile RetrofitManager mInstance;
 
     private volatile Retrofit mRetrofit;
+
+    private HttpClientService mHttpClientService;
 
     private RetrofitManager() {
 
@@ -50,9 +53,10 @@ public class RetrofitManager {
 
     /**
      * 全局的 retrofit
+     *
      * @return
      */
-    public Retrofit getGlobalRetrofit(){
+    public Retrofit getGlobalRetrofit() {
 
         return mRetrofit.newBuilder()
                 .client(OkHttpClientManager.getGlobalClient())
@@ -61,10 +65,11 @@ public class RetrofitManager {
 
 
     /**
-     *  下载文件 retrofit
+     * 下载文件 retrofit
+     *
      * @return
      */
-    public Retrofit getDownLoadRetrofit(){
+    public Retrofit getDownLoadRetrofit() {
         return mRetrofit
                 .newBuilder()
                 .client(OkHttpClientManager.getDownLoadOkHttpClient())
@@ -74,17 +79,15 @@ public class RetrofitManager {
 
     /**
      * 上传文件 retrofit
+     *
      * @return
      */
-    public Retrofit getUpdateRetrofit(){
+    public Retrofit getUpdateRetrofit() {
         return mRetrofit
                 .newBuilder()
                 .client(OkHttpClientManager.getUpdateClnt())
                 .build();
     }
-
-
-
 
 
 }
