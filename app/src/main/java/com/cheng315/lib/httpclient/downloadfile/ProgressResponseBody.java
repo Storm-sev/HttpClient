@@ -1,6 +1,5 @@
 package com.cheng315.lib.httpclient.downloadfile;
 
-import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.utils.RxBus;
 
 import java.io.IOException;
@@ -64,7 +63,7 @@ public class ProgressResponseBody extends ResponseBody {
                 long bytesRead = super.read(sink, byteCount);
                 bytesReaded += bytesRead == -1 ? 0 : bytesRead;
 //                RxBus.getInstace().send(new FileLoadEvent(responseBody.contentLength(), bytesReaded));
-                LogUtils.d(TAG,"获取的文件进度 ：　" + bytesReaded);
+//                LogUtils.d(TAG,"获取的文件进度 ：　" + bytesReaded);
                 // 背压
                 RxBus.getInstance().sendBackpressure(new FileLoadEvent(responseBody.contentLength(), bytesReaded));
 

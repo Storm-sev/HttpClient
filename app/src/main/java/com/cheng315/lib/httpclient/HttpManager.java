@@ -3,7 +3,6 @@ package com.cheng315.lib.httpclient;
 import com.cheng315.chengnfc.bean.VersionBean;
 import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 import com.cheng315.lib.httpclient.downloadfile.FileSubscriber;
-import com.cheng315.lib.httpclient.http.RetrofitManager;
 import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.lib.utils.RxBus;
 
@@ -33,40 +32,12 @@ public class HttpManager {
 
 
     /**
-     * 下载apk
-     *
-     * @param url
-     * @param fileCallBack
-     */
-    public static void downLoadApk(String url, final FileCallBack<ResponseBody> fileCallBack) {
-
-        Observable<ResponseBody> responseBodyObservable = RetrofitManager.getInstance().getDownLoadService().downLoadNewApk(url);
-
-        responseBodyObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Consumer<ResponseBody>() {
-                    @Override
-                    public void accept(ResponseBody responseBody) throws Exception {
-                        fileCallBack.saveFile(responseBody);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new FileSubscriber<ResponseBody>(fileCallBack));
-
-
-    }
-
-    /**
      * 下载执行请求
      */
     public static void load(String url, final FileCallBack<ResponseBody> fileCallBack) {
 
-//
         Observable<ResponseBody> responseBodyObservable
-                = HttpClientManager.getHttpClientService().downLoadNewApk(url);
-//
-//        Observable<ResponseBody> responseBodyObservable = HttpClientManager.getDownLOadService().downLoadNewApk(url);
+                = HttpClientManager.getDownLadService().downLoadNewApk(url);
 
         responseBodyObservable
                 .subscribeOn(Schedulers.io())
@@ -117,15 +88,11 @@ public class HttpManager {
 
     /**
      * 新版本 检查版本
-     *
-     * @param curVersionCode
-     * @param commonCallBack
      */
     public static void checkVersion(String curVersionCode, final CommonCallBack commonCallBack) {
 
         Observable<VersionBean> versionBeanObservable =
-                RetrofitManager.getInstance().getHttpClientService().checkVersionService(curVersionCode);
-
+                HttpClientManager.getHttpClientService().checkVersionService(curVersionCode);
         versionBeanObservable.subscribeOn(Schedulers.io())
                 .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -192,7 +159,7 @@ public class HttpManager {
 
 
         versionBeanObservable.subscribeOn(Schedulers.io())
-                .unsubscribeOn(Schedulers.io())
+                .unsubscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<VersionBean>() {
                     private Disposable mDisposable;
@@ -226,7 +193,6 @@ public class HttpManager {
 
                         LogUtils.d(TAG, "检查版本   onError: " + e.toString());
 
-
                     }
 
                     @Override
@@ -242,45 +208,6 @@ public class HttpManager {
 
                     }
                 });
-
-//                .subscribe(new Subscriber<VersionBean>() {
-//                    @Override
-//                    public void onCompleted() {
-//
-//                        LogUtils.d(TAG, "检查版本------onCompleted : 请求完成");
-//
-//                        if (commonCallBack != null) {
-//                            commonCallBack.onComplete();
-//                        }
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                        LogUtils.d(TAG, "检查版本 --------- onError : " + e.toString());
-//
-//                        if (commonCallBack != null) {
-//                            commonCallBack.onError(e);
-//
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onNext(VersionBean versionBean) {
-//                        LogUtils.d(TAG, "检查版本 ---------  onNext :");
-//                        int code = Integer.valueOf(versionBean.getCode());
-//
-//                        if (commonCallBack != null) {
-//                            commonCallBack.onNext(versionBean);
-//
-//                        }
-//
-//                        RxBus.getInstace().send("发送数据到 rxbus");
-//
-//                    }
-//                });
-
     }
 
 

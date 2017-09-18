@@ -29,8 +29,6 @@ public class MainActivity1 extends BaseActivity {
     TextView scanInput;
     @BindView(R.id.bottom_navigation)
     LinearLayout bottomNavigation;
-//    @BindView(R.id.main_right)
-//    RelativeLayout mainRight;
     @BindView(R.id.main_actionbar)
     MainActionbar mainActionbar;
     @BindView(R.id.activity_main)
@@ -59,9 +57,6 @@ public class MainActivity1 extends BaseActivity {
                         startActivity(intent);
                     }
                 });
-
-
-
 
 
         mainActionbar.getMainMenu().setOnClickListener(new View.OnClickListener() {
@@ -121,7 +116,6 @@ public class MainActivity1 extends BaseActivity {
     protected int attachLayoutRes() {
         return R.layout.activity_main1;
     }
-
 
 
 }

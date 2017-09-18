@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    private Button download_apk, btn_check, btn_send_sms, btn_to_main, btn_to_scan_nfc,btn_down_apk,btn_check_version;
+    private Button download_apk, btn_check, btn_send_sms, btn_to_main, btn_to_scan_nfc, btn_check_version;
     private TextView textView;
     private EditText et_phone;
     private VersionBean mVersionBean;
@@ -95,19 +95,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
-        RxView.clicks(btn_down_apk)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(Object o) throws Exception {
-
-                        if (mVersionBean == null) {
-                            return;
-                        }
-                        startToUpdate();
-
-                    }
-                });
 
         RxView.clicks(btn_check_version)
                 .subscribe(new Consumer<Object>() {
@@ -197,8 +184,7 @@ public class MainActivity extends AppCompatActivity {
         et_phone = (EditText) findViewById(R.id.et_phone);
         btn_send_sms = (Button) findViewById(R.id.btn_send_sms);
 
-        btn_down_apk = (Button)findViewById(R.id.btn_down_apk);
-        btn_check_version = (Button)findViewById(R.id.btn_check_version);
+        btn_check_version = (Button) findViewById(R.id.btn_check_version);
 
 
     }

@@ -58,12 +58,7 @@
             android:text="跳转主题页面"
             android:layout_height="wrap_content"
             />
-        <Button
-            android:id="@+id/btn_down_apk"
-            android:layout_width="wrap_content"
-            android:text="下载apk"
-            android:layout_height="wrap_content"
-            />
+
         <Button
             android:id="@+id/btn_check_version"
             android:layout_width="wrap_content"

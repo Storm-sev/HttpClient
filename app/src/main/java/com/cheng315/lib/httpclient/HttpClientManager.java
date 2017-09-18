@@ -17,7 +17,8 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Administrator on 2017/8/24.
+ * Created by Administrator on 2017/8/24.\
+ *
  */
 
 public class HttpClientManager {
@@ -29,8 +30,6 @@ public class HttpClientManager {
     public static HttpClientService mHttpClientService;
     public static HttpClientImgService mHttpClientImgService;
 
-    public static DownLoadService mDownLoadService;
-
     public static Retrofit initRetrofit() {
 
         if (mRetrofit == null) {
@@ -40,11 +39,8 @@ public class HttpClientManager {
                     httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                     CacheInterceptor cacheInterceptor = new CacheInterceptor();
 
-                    ProgressInterceptor progressInterceptor = new ProgressInterceptor();
-
                     Cache cache = new Cache(new File(MApplication.appContext.getCacheDir(), "HttpCache")
                             , 1024 * 1024 * 100);
-
 
                     LogUtils.d(TAG, "okhttp 的缓存路径 " + MApplication.appContext.getCacheDir().toString());
                     httpClient = new OkHttpClient.Builder()
@@ -52,7 +48,6 @@ public class HttpClientManager {
                             .addInterceptor(cacheInterceptor) // 添加网络缓存的 拦截器
                             .retryOnConnectionFailure(true)
                             .addInterceptor(httpLoggingInterceptor)
-//                            .addNetworkInterceptor(progressInterceptor)
                             .connectTimeout(10, TimeUnit.SECONDS)
                             .readTimeout(10, TimeUnit.SECONDS)
                             .writeTimeout(10, TimeUnit.SECONDS)
@@ -77,24 +72,24 @@ public class HttpClientManager {
 
 
     /**
-     * 获取下载 接口
-     * @return
+     * 下载接口
      */
-    public static DownLoadService getDownLOadService() {
+    public static DownLoadService getDownLadService() {
 
         ProgressInterceptor progressInterceptor = new ProgressInterceptor();
-
-        httpClient.newBuilder().addNetworkInterceptor(progressInterceptor).build();
-
-
-        return initRetrofit().newBuilder().client(httpClient).build().create(DownLoadService.class);
+        return initRetrofit()
+                .newBuilder()
+                .client(httpClient
+                        .newBuilder()
+                        .addNetworkInterceptor(progressInterceptor)
+                        .build())
+                .build()
+                .create(DownLoadService.class);
     }
 
 
     /**
-     * 获取连接请求 根据不同的模块创建不同的请求service
-     *
-     * @return
+     * 数据请求接口
      */
     public static HttpClientService getHttpClientService() {
         if (mHttpClientService == null) {
@@ -106,9 +101,7 @@ public class HttpClientManager {
 
 
     /**
-     * 图片请求
-     *
-     * @return
+     * 资源接口
      */
     public static HttpClientImgService getHttpClientImgService() {
 
@@ -122,11 +115,5 @@ public class HttpClientManager {
 
         return mHttpClientImgService;
     }
-
-
-
-
-
-
 
 }

@@ -52,9 +52,9 @@ public class UpdateService extends Service {
 
         createNotification();
 
-//        downLoadApk(intent);
+        downLoadApk(intent);
 
-        downLoadApk1(intent);
+//        downLoadApk1(intent);
 
         return super.onStartCommand(intent, flags, startId);
     }
@@ -69,7 +69,7 @@ public class UpdateService extends Service {
 
             final String apkUrl = intent.getStringExtra(UpdateService.APK_URL);
 
-            HttpManager.downLoadApk(apkUrl, new FileCallBack<ResponseBody>(
+            HttpManager.load(apkUrl, new FileCallBack<ResponseBody>(
                     Environment.getExternalStorageDirectory().getAbsolutePath(), AppUtils.getNameFromUrl(apkUrl)) {
 
                 @Override
