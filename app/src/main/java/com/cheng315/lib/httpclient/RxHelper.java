@@ -14,8 +14,6 @@ import io.reactivex.schedulers.Schedulers;
  */
 
 public class RxHelper {
-
-
     /**
      * rx线程切换
      */

@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void _setUpListener() {
 
+
+
+
         RxView.clicks(btn_to_scan_nfc)
                 .subscribe(new Consumer<Object>() {
                     @Override
@@ -72,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
-//
         RxView.clicks(btn_check)
                 .subscribe(new Consumer<Object>() {
                     @Override

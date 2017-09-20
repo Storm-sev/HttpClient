@@ -89,7 +89,7 @@ public class UpdateService extends Service {
 
                     if (file.exists()) {
 
-                        AppUtils.installApp(UpdateService.this, file);
+//                        AppUtils.installApp(UpdateService.this, file);
                     }
 
 

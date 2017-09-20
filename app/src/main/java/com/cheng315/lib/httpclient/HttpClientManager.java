@@ -108,7 +108,6 @@ public class HttpClientManager {
                     .build()
                     .create(HttpClientImgService.class);
         }
-
         return mHttpClientImgService;
     }
 

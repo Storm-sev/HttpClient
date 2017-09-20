@@ -84,6 +84,8 @@ public class HttpManager {
         Observable<ResponseBody> responseBodyObservable =
 
                 HttpClientManager.getHttpClientService().uploadFile(description, body);
+
+
     }
 
 
@@ -141,8 +143,6 @@ public class HttpManager {
                             commonCallBack.onComplete();
 
                         }
-
-
                     }
                 });
 

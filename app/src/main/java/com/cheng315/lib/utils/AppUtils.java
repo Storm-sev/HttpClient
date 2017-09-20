@@ -19,7 +19,8 @@ public class AppUtils {
 
 
     /**
-     * 获取 appliaction context
+     * 获取 Application 的context
+     *
      * @return
      */
     public static Context getAppContext(){

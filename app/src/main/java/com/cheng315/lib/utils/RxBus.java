@@ -36,11 +36,10 @@ public class RxBus {
      */
     private FlowableProcessor<Object> _mBackpressureBus;
 
-
     // 类似于粘性广播
     private static Map<Class<?>, Object> mStrckyEventMap;
 
-    //rxbus 订阅管理 CompositeSubscription 管理多个
+    //Rxbus  订阅管理 CompositeSubscription 管理多个
     private HashMap<String, CompositeDisposable> mSubscriptionmMap;
 
     private RxBus() {
@@ -111,31 +110,15 @@ public class RxBus {
      *
      * @return
      */
-    public <T> Subscriber doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
-//
-//        Flowable<T> tFlowable = toFlowable(eventType)
-//                .onBackpressureLatest()
-//                .subscribeOn(Schedulers.io())
-//                .unsubscribeOn(Schedulers.io())
-//                .doOnCancel(new Action() {
-//                    @Override
-//                    public void run() throws Exception {
-//                        LogUtils.d(TAG, "Flowable --------------------取消订阅");
-//                    }
-//                })
-//                .observeOn(AndroidSchedulers.mainThread());
-//
-//        tFlowable
-//                .subscribeWith(subscriber);
+    public <T> Flowable doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
 
-        // 处理背压的情况下添加参数 根据不同的背压策略来定制不同的请求方式.
-
-        return toFlowable(eventType)
+        toFlowable(eventType)
                 .onBackpressureLatest()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(subscriber);
 
+        return toFlowable(eventType);
 
     }
 
@@ -168,7 +151,6 @@ public class RxBus {
             compositeDisposable.add(disposable);
             mSubscriptionmMap.put(key, compositeDisposable);
         }
-
 
     }
 
@@ -260,7 +242,5 @@ public class RxBus {
         }
 
         mSubscriptionmMap.remove(key);
-
-
     }
 }

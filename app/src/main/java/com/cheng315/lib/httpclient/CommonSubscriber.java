@@ -18,7 +18,7 @@ public abstract class CommonSubscriber<T> implements Observer<T> {
 
     private static final String TAG = CommonSubscriber.class.getSimpleName();
 
-    Disposable mDisposable;
+    private Disposable mDisposable;
 
 
     /**
@@ -49,7 +49,7 @@ public abstract class CommonSubscriber<T> implements Observer<T> {
 
     @Override
     public void onError(@NonNull Throwable e) {
-        LogUtils.d(TAG, "base CommonSubscriber 　onError : ");
+        LogUtils.d(TAG, "base CommonSubscriber 　onError : " +  e.toString());
 
 
 

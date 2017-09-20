@@ -32,7 +32,6 @@ public class CacheInterceptor implements Interceptor {
                     .build();
         }
 
-
         Response response = chain.proceed(request);
 
         if (NetWorkUtils.isConnected()) {
