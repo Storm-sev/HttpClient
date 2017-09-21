@@ -4,7 +4,6 @@ import com.cheng315.chengnfc.bean.VersionBean;
 import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
 import com.cheng315.lib.httpclient.downloadfile.FileSubscriber;
 import com.cheng315.lib.utils.LogUtils;
-import com.cheng315.lib.utils.RxBus;
 
 import java.io.File;
 
@@ -51,6 +50,7 @@ public class HttpManager {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new FileSubscriber<ResponseBody>(fileCallBack));
+
 
 
     }
@@ -117,7 +117,6 @@ public class HttpManager {
                             commonCallBack.onNext(versionBean);
 
                         }
-                        RxBus.getInstance().send("发送数据");
                         LogUtils.d(TAG, "检查版本 : onNext ");
 
                     }
@@ -130,8 +129,6 @@ public class HttpManager {
                         }
 
                         LogUtils.d(TAG, "检查版本   onError: " + e.toString());
-
-
                     }
 
                     @Override
@@ -177,7 +174,6 @@ public class HttpManager {
                             commonCallBack.onNext(versionBean);
 
                         }
-                        RxBus.getInstance().send("发送数据");
                         LogUtils.d(TAG, "检查版本 : onNext ");
 
                     }

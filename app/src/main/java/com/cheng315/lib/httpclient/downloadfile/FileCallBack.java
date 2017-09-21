@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import io.reactivex.Flowable;
-import io.reactivex.disposables.Disposable;
 import okhttp3.ResponseBody;
 
 /**
@@ -27,10 +26,9 @@ public abstract class FileCallBack<T> {
     private static final String TAG = FileCallBack.class.getSimpleName();
 
 
-
     private String fileDir;// 文件的存储路径
     private String fileName; // 文件的名字
-    private Flowable flowable;
+//    private Flowable flowable;
 
     public FileCallBack(String fileDir, String fileName) {
         this.fileDir = fileDir;
@@ -108,16 +106,12 @@ public abstract class FileCallBack<T> {
      */
     public void unSubscribe() {
 
+        if (RxBus.getInstance().hasSubscribers(true)) {
 
-        if (flowable != null) {
-
-
-            LogUtils.d(TAG, "下载apk 解除订阅 :");
-
-            ((Disposable) flowable).dispose();
-
-//            RxBus.getInstance().unSubscribe(new FileLoadEvent());
+            RxBus.getInstance().unSubscription();
         }
+
+
 
     }
 
@@ -125,49 +119,43 @@ public abstract class FileCallBack<T> {
     //订阅加载进度条
     public void subscribeLoadProgress() {
 
-        Flowable flowable = RxBus.getInstance().doFlowable(FileLoadEvent.class, new Subscriber<FileLoadEvent>() {
-
+        final Flowable flowable = RxBus.getInstance().doFlowable(FileLoadEvent.class, new Subscriber<FileLoadEvent>() {
             Subscription sub;
 
             @Override
             public void onSubscribe(Subscription s) {
-                LogUtils.d(TAG, "Rxbus 发送过来的数据 .  + onSubscribe");
-
+                LogUtils.d(TAG, "新Rxbus,数据 + onSubscribe ");
                 this.sub = s;
+
                 sub.request(1);
 
             }
 
             @Override
             public void onNext(FileLoadEvent fileLoadEvent) {
-                LogUtils.d(TAG, "Rxbus 发送过来的数据 .  + onNext");
-
 
                 long progress = fileLoadEvent.getProgress();
                 long total = fileLoadEvent.getTotal();
 
                 onProgress(progress * 1.0f / total, total);
                 sub.request(1);
+
             }
 
             @Override
             public void onError(Throwable t) {
-                LogUtils.d(TAG, "Rxbus 发送过来的数据 .  + onError");
-
+                LogUtils.d(TAG, "新Rxbus,数据 + onError");
             }
 
             @Override
             public void onComplete() {
+                LogUtils.d(TAG, "新Rxbus,数据 .  + onComplete");
 
-                LogUtils.d(TAG, "Rxbus 发送过来的数据 .  + onComplete");
-//                unSubscribe();
-                sub.cancel();
+
             }
         });
 
-        //添加订阅
 
-//        RxBus.getInstance().addSubscription(new FileLoadEvent(),  (Disposable) flowable);
     }
 
 }

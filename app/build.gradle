@@ -11,17 +11,25 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//
+        jackOptions{
+            enabled true
+        }
+
     }
+
+    compileOptions{
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-//    compileOptions {
-//        targetCompatibility 1.8
-//        sourceCompatibility 1.8
-//    }
+
 }
 
 dependencies {
@@ -49,5 +57,7 @@ dependencies {
     compile 'com.jakewharton.rxbinding2:rxbinding-support-v4:2.0.0'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.6.0'
-
+    //内存泄漏检测
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.3'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.3'
 }

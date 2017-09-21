@@ -1,91 +1,95 @@
 package com.cheng315.lib.utils;
 
+import com.cheng315.lib.httpclient.RxHelper;
 
 import org.reactivestreams.Subscriber;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
 /**
- * Created by Storm on 2017/6/1
- * rxbus 数据传递工具类.
+ * Created by storm on 2017/9/20.
+ * <p>
+ * Rxbus
  */
 
 public class RxBus {
 
     private static final String TAG = RxBus.class.getSimpleName();
 
-    private static volatile RxBus INSTANCE;
+
+    private static volatile RxBus mInstance;
+
+    /**
+     * 默认 bus ;
+     */
 
     private Subject<Object> _mBus;
+
     /**
-     * 有背压处理的rxbus
+     * 背压
      */
-    private FlowableProcessor<Object> _mBackpressureBus;
+    private FlowableProcessor<Object> _mBackPressureBus;
 
-    // 类似于粘性广播
-    private static Map<Class<?>, Object> mStrckyEventMap;
 
-    //Rxbus  订阅管理 CompositeSubscription 管理多个
-    private HashMap<String, CompositeDisposable> mSubscriptionmMap;
+    private Map<Object, CompositeDisposable> mSubscription;
+
 
     private RxBus() {
-        //ConcurrentHashMap 是线程安全的
+
         _mBus = PublishSubject.create().toSerialized();
-        _mBackpressureBus = PublishProcessor.create().toSerialized();
-        mStrckyEventMap = new ConcurrentHashMap<>();
+
+        _mBackPressureBus = PublishProcessor.create().toSerialized();
     }
 
 
     public static RxBus getInstance() {
-        if (INSTANCE == null) {
+
+        if (mInstance == null) {
+
             synchronized (RxBus.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new RxBus();
+                if (mInstance == null) {
+
+                    mInstance = new RxBus();
                 }
             }
-
         }
-        return INSTANCE;
+
+        return mInstance;
     }
 
 
     /**
-     * 发送普通的数据
-     *
-     * @param event
+     * 发送普通事件
      */
     public void send(Object event) {
+
         _mBus.onNext(event);
 
     }
 
-    /**
-     * 发送 有背压的数据
-     *
-     * @param event
-     */
-    public void sendBackpressure(Object event) {
 
-        _mBackpressureBus.onNext(event);
+    /**
+     * 发送背压事件
+     */
+    public void sendByBackPressure(Object event) {
+        _mBackPressureBus.onNext(event);
+
     }
 
 
     /**
-     * 获取普通数据传递的数据
+     * 接收普通事件
      */
     public <T> Observable<T> toObservable(Class<T> eventType) {
 
@@ -94,153 +98,111 @@ public class RxBus {
 
 
     /**
-     * 获取 背压处理数据
-     *
-     * @param eventType
-     * @param <T>
-     * @return
+     * 接受背压事件
      */
     public <T> Flowable<T> toFlowable(Class<T> eventType) {
-        return _mBackpressureBus.ofType(eventType);
+
+        return _mBackPressureBus.ofType(eventType);
     }
 
 
     /**
-     * 背压的处理
-     *
-     * @return
+     * 普通事件的处理
      */
-    public <T> Flowable doFlowable(Class<T> eventType, Subscriber<T> subscriber) {
+    public <T> Disposable doSubscribe(Class<T> eventType, Consumer<T> next, Consumer<Throwable> error) {
+
+        return toObservable(eventType)
+                .compose(RxHelper.<T>IO_Main())
+                .subscribe(next, error);
+    }
+
+
+    /**
+     * 背压事件处理
+     */
+    public <T> Flowable doFlowable(Class<T> eventType, Subscriber<T> tSubscriber) {
 
         toFlowable(eventType)
-                .onBackpressureLatest()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(subscriber);
+                .onBackpressureLatest() //背压策略
+                .compose(RxHelper.<T>IO_Main_Flowable())
+                .subscribeWith(tSubscriber);
 
         return toFlowable(eventType);
-
     }
 
-    public <T> Disposable doSubscribe(Class<T> eventType, Consumer<T> next, Consumer<Throwable> error) {
-        return toObservable(eventType)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(next, error);
+
+    /**
+     * 是否有订阅者
+     */
+    public  boolean hasSubscribers(boolean isBackPressure) {
+
+        if (!isBackPressure)
+            return _mBus.hasObservers();
+        else
+            return _mBackPressureBus.hasSubscribers();
+    }
+
+
+    /**
+     * 背压解除订阅
+     */
+    public void unSubscription(){
+
+        _mBackPressureBus.onComplete();
 
     }
 
 
     /**
-     * 添加订阅者到集合
+     * 添加订阅到集合(一般事件)
      */
-    public void addSubscription(Object o, Disposable disposable) {
+    public void addSubscriptions(Object o, Disposable disposable) {
 
-        if (mSubscriptionmMap == null) {
-            mSubscriptionmMap = new HashMap<>();
-
+        if (mSubscription == null) {
+            mSubscription = new HashMap<>();
         }
 
         String key = o.getClass().getName();
 
-        if (mSubscriptionmMap.get(key) != null) {
-            mSubscriptionmMap.get(key).add(disposable);
+        if (mSubscription.get(key) != null) {
+            mSubscription.get(key).add(disposable);
 
         } else {
             CompositeDisposable compositeDisposable = new CompositeDisposable();
+
             compositeDisposable.add(disposable);
-            mSubscriptionmMap.put(key, compositeDisposable);
+            mSubscription.put(key, compositeDisposable);
         }
+
 
     }
 
+
     /**
-     * 判断是否有订阅者
+     * 解除订阅
+     * 一般事件的解除订阅
      *
-     * @return
+     * @param o
      */
-    public boolean hasObservers() {
-        return _mBus.hasObservers();
-    }
-
-
-    public boolean hasFlowable() {
-        return _mBackpressureBus.hasSubscribers();
-    }
-
-
-    // 发送一个 Sticky 事件
-
-    /**
-     * 发送消息
-     *
-     * @param event
-     */
-    public void sendSticky(Object event) {
-        synchronized (mStrckyEventMap) {
-            mStrckyEventMap.put(event.getClass(), event);
-        }
-        send(event);
-    }
-
-
-    /**
-     * 发送粘性
-     *
-     * @param eventType
-     * @param <T>
-     * @return
-     */
-    public <T> Observable<T> toObservableSticky(Class<T> eventType) {
-        synchronized (mStrckyEventMap) {
-            Observable<T> tObservable = _mBus.ofType(eventType);
-            Object event = mStrckyEventMap.get(eventType);
-
-            if (event != null) {
-                return tObservable.mergeWith(Observable.just(eventType.cast(event)));
-            } else {
-
-                return tObservable;
-            }
-        }
-
-    }
-
-
-    public <T> T removeStickyEvent(Class<T> eventType) {
-        synchronized (mStrckyEventMap) {
-            return eventType.cast(mStrckyEventMap.remove(eventType));
-        }
-    }
-
-    /**
-     * 移除所有的sticky事件
-     */
-    public void removeAllStickyEvent() {
-        synchronized (mStrckyEventMap) {
-            mStrckyEventMap.clear();
-
-        }
-    }
-
-
-    public void unSubscribe(Object o) {
-
-        if (mSubscriptionmMap == null) {
+    public void clearSubscriptions(Object o) {
+        if (mSubscription == null) {
             return;
         }
+
 
         String key = o.getClass().getName();
 
-        if (!mSubscriptionmMap.containsKey(key)) {
+        if (!mSubscription.containsKey(key)) {
             return;
         }
 
-        if (mSubscriptionmMap.get(key) != null) {
 
-            mSubscriptionmMap.get(key).dispose();
+        if (mSubscription.get(key) != null) {
+            mSubscription.get(key).dispose();
+
         }
 
-        mSubscriptionmMap.remove(key);
+        mSubscription.remove(key);
     }
+
 }

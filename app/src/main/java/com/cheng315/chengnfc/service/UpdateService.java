@@ -15,6 +15,7 @@ import com.cheng315.chengnfc.R;
 import com.cheng315.chengnfc.utils.AppUtils;
 import com.cheng315.lib.httpclient.HttpManager;
 import com.cheng315.lib.httpclient.downloadfile.FileCallBack;
+import com.cheng315.lib.utils.RxBus;
 import com.cheng315.lib.utils.LogUtils;
 
 import java.io.File;
@@ -99,6 +100,9 @@ public class UpdateService extends Service {
                     } else {
                         LogUtils.d(TAG, " 获取的缓存文件不存在 ");
                     }
+
+
+                    LogUtils.d(TAG, "检测 rxbus 背压是否 解除订阅  :  " + RxBus.getInstance().hasSubscribers(true));
 
                     stopSelf();
                 }

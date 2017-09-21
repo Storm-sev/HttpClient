@@ -9,8 +9,8 @@ import io.reactivex.disposables.Disposable;
 
 /**
  * Created by storm on 2017/9/15.
- *
- *    观察者抽象类
+ * <p>
+ * 观察者抽象类
  */
 
 public abstract class CommonSubscriber<T> implements Observer<T> {
@@ -20,10 +20,8 @@ public abstract class CommonSubscriber<T> implements Observer<T> {
 
     private Disposable mDisposable;
 
-
     /**
      * 在使用之前调用
-     * @param d
      */
     @Override
     public void onSubscribe(@NonNull Disposable d) {
@@ -36,21 +34,17 @@ public abstract class CommonSubscriber<T> implements Observer<T> {
             return;
         }
 
-
-
     }
 
     @Override
     public void onNext(@NonNull T t) {
         LogUtils.d(TAG, "base CommonSubscriber 　onNext : ");
 
-
     }
 
     @Override
     public void onError(@NonNull Throwable e) {
-        LogUtils.d(TAG, "base CommonSubscriber 　onError : " +  e.toString());
-
+        LogUtils.d(TAG, "base CommonSubscriber 　onError : " + e.toString());
 
 
     }

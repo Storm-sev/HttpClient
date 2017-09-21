@@ -8,9 +8,9 @@ package com.cheng315.lib.httpclient;
 public class MsgEvent<T> {
 
 
-    int code;
+    public int code;
 
-    T content;
+    public T content;
 
 
     public MsgEvent(int code, T content) {

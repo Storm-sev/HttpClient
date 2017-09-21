@@ -17,8 +17,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by Administrator on 2017/8/24.\
- *
+ * Created by Administrator on 2017/8/24
  */
 
 public class HttpClientManager {
@@ -30,7 +29,10 @@ public class HttpClientManager {
     public static HttpClientService mHttpClientService;
     public static HttpClientImgService mHttpClientImgService;
 
-    public static Retrofit initRetrofit() {
+    /**
+     *
+     */
+    private static Retrofit initRetrofit() {
 
         if (mRetrofit == null) {
             synchronized (HttpClientManager.class) {
@@ -61,9 +63,6 @@ public class HttpClientManager {
                             .build();
 
 
-                    LogUtils.d(TAG, "retrofit实例 : " + mRetrofit);
-
-
                 }
             }
         }
@@ -92,7 +91,19 @@ public class HttpClientManager {
      * 数据请求接口
      */
     public static HttpClientService getHttpClientService() {
-        return initRetrofit().create(HttpClientService.class);
+
+        if (mHttpClientService == null) {
+            mHttpClientService = getHttpService(HttpClientService.class);
+        }
+        return mHttpClientService;
+    }
+
+
+    /**
+     * 获取请求接口
+     */
+    public static <T> T getHttpService(Class<T> clazz) {
+        return initRetrofit().create(clazz);
     }
 
 
@@ -107,6 +118,7 @@ public class HttpClientManager {
                     .baseUrl(Api.BASE_IMG_URL)
                     .build()
                     .create(HttpClientImgService.class);
+
         }
         return mHttpClientImgService;
     }

@@ -14,12 +14,13 @@ import com.cheng315.chengnfc.utils.validations.ValidationModel;
 import com.cheng315.chengnfc.utils.validations.validation.UserNameValidation;
 import com.cheng315.lib.httpclient.CommonCallBack;
 import com.cheng315.lib.httpclient.HttpManager;
+import com.cheng315.lib.httpclient.downloadfile.FileLoadEvent;
 import com.cheng315.lib.utils.LogUtils;
-import com.cheng315.lib.utils.RxBus;
 import com.jakewharton.rxbinding2.view.RxView;
-
+import com.cheng315.lib.utils.RxBus;
 import java.util.regex.Pattern;
 
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView;
     private EditText et_phone;
     private VersionBean mVersionBean;
+    private FileLoadEvent fileLoadEvent;
 
 
     @Override
@@ -51,9 +53,6 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private void _setUpListener() {
-
-
-
 
         RxView.clicks(btn_to_scan_nfc)
                 .subscribe(new Consumer<Object>() {
@@ -191,21 +190,21 @@ public class MainActivity extends AppCompatActivity {
     private void initData() {
 
         checkVersionCode();
-        RxBus.getInstance().doSubscribe(VersionBean.class, new Consumer<VersionBean>() {
+        Disposable disposable = RxBus.getInstance().doSubscribe(VersionBean.class, new Consumer<VersionBean>() {
             @Override
             public void accept(VersionBean versionBean) throws Exception {
                 mVersionBean = versionBean;
+
+
             }
-
-
         }, new Consumer<Throwable>() {
             @Override
             public void accept(Throwable throwable) throws Exception {
 
             }
-
         });
 
+        RxBus.getInstance().addSubscriptions(this, disposable);
 
 //        RxView.clicks(btn_send_sms)
 //                .subscribe(new Action1<Void>() {
@@ -274,6 +273,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!"0".equals(versionBean.getCode())) {
                     return;
                 }
+
                 RxBus.getInstance().send(versionBean);
             }
 
@@ -281,5 +281,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RxBus.getInstance().clearSubscriptions(this);
 
+    }
 }

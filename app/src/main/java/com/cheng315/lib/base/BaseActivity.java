@@ -11,7 +11,7 @@ import butterknife.ButterKnife;
  * BaseActivity 的基类
  */
 
-public  abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
 
     @Override
@@ -22,7 +22,6 @@ public  abstract class BaseActivity extends AppCompatActivity {
         initViews();
         initData();
         setUpListener();
-
 
     }
 
@@ -48,11 +47,6 @@ public  abstract class BaseActivity extends AppCompatActivity {
      * init layout
      */
     protected abstract int attachLayoutRes();
-
-
-
-
-
 
 
 }

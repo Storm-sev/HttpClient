@@ -1,6 +1,10 @@
 package com.cheng315.lib.httpclient;
 
 
+import org.reactivestreams.Publisher;
+
+import io.reactivex.Flowable;
+import io.reactivex.FlowableTransformer;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -15,7 +19,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class RxHelper {
     /**
-     * rx线程切换
+     * rx observable 线程切换
      */
     public static <T> ObservableTransformer<T, T> IO_Main() {
 
@@ -29,6 +33,23 @@ public class RxHelper {
             }
         };
 
+    }
+
+
+    /**
+     * rx Flowable 线程
+     */
+    public static <T> FlowableTransformer<T, T> IO_Main_Flowable() {
+
+
+        return new FlowableTransformer<T, T>() {
+            @Override
+            public Publisher<T> apply(@NonNull Flowable<T> upstream) {
+                return upstream.subscribeOn(Schedulers.io())
+                        .unsubscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+            }
+        };
     }
 
 }

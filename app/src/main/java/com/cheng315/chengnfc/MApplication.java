@@ -3,8 +3,9 @@ package com.cheng315.chengnfc;
 import android.app.Application;
 import android.content.Context;
 
-import com.cheng315.lib.utils.LogUtils;
 import com.cheng315.chengnfc.utils.validations.EditTextValidator;
+import com.cheng315.lib.utils.LogUtils;
+import com.squareup.leakcanary.LeakCanary;
 
 /**
  * Created by Administrator on 2017/8/24.
@@ -17,6 +18,9 @@ public class MApplication extends Application {
     public static LogUtils.Builder mBuilder;
 
     private static EditTextValidator editTextValidator;
+
+
+//    private RefWatcher refWatcher;
 
     @Override
     public void onCreate() {
@@ -34,11 +38,27 @@ public class MApplication extends Application {
 
         editTextValidator = new EditTextValidator(this);
 
+        setUpLeakCanary();
         // 获取全局异常信息
 //        CrashHandler.getInstance().init(this);
 
+
+        // 内存泄漏检测
+//        refWatcher = LeakCanary.install(this);
+
     }
 
+    /**
+     * 内存泄漏检测
+     */
+    private void setUpLeakCanary() {
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+         return;
+        }
+
+        LeakCanary.install(this);
+    }
 
 
     public static EditTextValidator getSingleEditTextValidator(){

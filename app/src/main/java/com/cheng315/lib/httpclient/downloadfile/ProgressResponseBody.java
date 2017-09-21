@@ -30,7 +30,6 @@ public class ProgressResponseBody extends ResponseBody {
 
     public ProgressResponseBody(ResponseBody responseBody) {
 
-
         this.responseBody = responseBody;
         this.fileLoadEvent = new FileLoadEvent();
 
@@ -67,13 +66,12 @@ public class ProgressResponseBody extends ResponseBody {
 
                 long bytesRead = super.read(sink, byteCount);
                 bytesReaded += bytesRead == -1 ? 0 : bytesRead;
-//                RxBus.getInstace().send(new FileLoadEvent(responseBody.contentLength(), bytesReaded));
 //                LogUtils.d(TAG,"获取的文件进度 ：　" + bytesReaded);
                 // 背压
                 fileLoadEvent.setTotal(responseBody.contentLength());
                 fileLoadEvent.setProgress(bytesReaded);
-                RxBus.getInstance().sendBackpressure(fileLoadEvent);
 
+                RxBus.getInstance().sendByBackPressure(fileLoadEvent);
                 return bytesRead;
             }
 
